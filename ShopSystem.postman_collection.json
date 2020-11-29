@@ -1,0 +1,1894 @@
+{
+	"info": {
+		"_postman_id": "7867f9d4-9115-474d-a5a4-70e0b2d74a40",
+		"name": "ShopSystem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "/user/login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f3b40942-5e38-49dc-b959-56addae3e84c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "13e59ad4-12cb-4ece-b8a7-697a6f8cd007",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.globals.set(\"token\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/login",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "nickname",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/signup",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/question",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/question?username=admin",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"question"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6c193293-b4c4-486f-8c5a-bf42929a50ab",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/info",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "nickname",
+									"value": "测试",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								},
+								{
+									"key": "question",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "answer",
+									"value": "test",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/info",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order?page=0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "066791f0-7cb1-4d40-ae1a-990c915a0bf0",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/order?page=0",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e5ee0c0b-1493-4d78-a10b-9c674836b845",
+								"exec": [
+									"let body = {",
+									"    \"aid\": 1,",
+									"    \"details\": []",
+									"}",
+									"for(let i=0; i < _.random(1, 4); i++) {",
+									"    body.details.push({",
+									"        \"pid\": _.random(1, 12),",
+									"        \"quantity\": _.random(1, 20)",
+									"    })",
+									"}",
+									"pm.environment.set(\"body\", JSON.stringify(body));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/order",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order/1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0b4c6ff5-55c5-4daa-9a6e-317a9c1a18cb",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/order/16",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "status",
+									"value": "Cancel",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/order/16",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/order/16",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/order/2/comment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "rate",
+									"value": "8",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "非常好用的手机！",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/order/28/comment",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"order",
+								"28",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "40eeac54-f478-45d1-9e34-7d961ef3ddeb",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/1",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b5437f34-9b94-47db-87ad-0f366035bca8",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/address",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/address/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "111",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "test address",
+									"type": "text"
+								},
+								{
+									"key": "isDefault",
+									"value": "false",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/address/2",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"address",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/address",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "test address",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/address",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/address/default",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8b128bf2-f937-46e8-a7bb-b5f153a9217f",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/address/default",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"address",
+								"default"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/address/4",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/address/5",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"address",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Normal",
+			"item": [
+				{
+					"name": "/category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/category",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/category/1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/category/1",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"category",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/category/2/product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/category/2/product",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"category",
+								"2",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/pageSize",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/pageSize",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"pageSize"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product?page=1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product?page=1",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/1",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/1/comment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/2/comment",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"2",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/image/1.jpg",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/image/1.jpg",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"image",
+								"1.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/search?product=电脑",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/search?product=电脑",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"search"
+							],
+							"query": [
+								{
+									"key": "product",
+									"value": "电脑"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/product/banner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/product/banner",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"product",
+								"banner"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "/admin/product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "categoryId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "test1",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"value": "[]",
+									"type": "text"
+								},
+								{
+									"key": "detail",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "99",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "99",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/product",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/product/2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "categoryId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "测试耳机",
+									"type": "text"
+								},
+								{
+									"key": "subtitle",
+									"value": "title",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"value": "[]",
+									"type": "text"
+								},
+								{
+									"key": "detail",
+									"value": "detail",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "999",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "99",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/product/2",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"product",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/product/uploadImage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/shiroyk/Documents/Work/ShopSystem/shopsystem/image/1.jpg"
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/product/uploadImage",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"product",
+								"uploadImage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "耳机",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/category",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/category/2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "耳机",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/category/2",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"category",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ecf7e396-c572-4a83-bdf5-508478721c5a",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order?page=0",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "status",
+									"value": "Shipped",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "7427",
+									"type": "text"
+								},
+								{
+									"key": "payMethod",
+									"value": "微信",
+									"type": "text"
+								},
+								{
+									"key": "express",
+									"value": "顺丰",
+									"type": "text"
+								},
+								{
+									"key": "logistics",
+									"value": "2192041239",
+									"type": "text"
+								},
+								{
+									"key": "isDelete",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order/17",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order",
+								"17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order?page=0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a0de8c76-f177-4c45-bef4-1ea7de4a7eae",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order?page=0",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order/search?username=test&n=0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "03a85a1e-dfaa-416e-a641-8768c73c7e74",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order/search?username=test&page=0",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order",
+								"search"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "test"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order/16",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9c0cc6bc-8513-46a3-b6a3-1d06f0f76c4a",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order/16",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/order/28/comment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "userId",
+									"value": "4",
+									"type": "text"
+								},
+								{
+									"key": "rate",
+									"value": "9",
+									"type": "text"
+								},
+								{
+									"key": "comment",
+									"value": "非常好用的手机！",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/order/28/comment",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"order",
+								"28",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e399e825-eff0-4c3f-b04f-c9dce7e76de2",
+								"exec": [
+									"pm.test(\"response must be valid and have a body\", function () {",
+									"     pm.response.to.be.ok;",
+									"     pm.response.to.be.withBody;",
+									"     pm.response.to.be.json;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/user",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test3",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "nickname",
+									"value": "test3",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								},
+								{
+									"key": "question",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "answer",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "Normal",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/user",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/user/test3",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "nickname",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								},
+								{
+									"key": "question",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "answer",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "Support",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/user/test3",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"user",
+								"test3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/user/test2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/user/test2",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"user",
+								"test2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/banner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/admin/banner",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"banner"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/admin/statistic",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/admin/statistic",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"admin",
+								"statistic"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,0 +1,77 @@
+version: "3.4"
+services:
+    nginx:
+        image: nginx:latest
+        restart: always
+        container_name: nginx
+        depends_on:
+            - backend
+        volumes:
+            - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/conf/conf.d:/etc/nginx/conf.d
+            - ./frontend/dist:/usr/share/nginx/html
+            - ./nginx/logs:/var/logs/nginx
+        networks:
+            - api_net
+        ports:
+            - 80:80
+    shopdb:
+        image: mysql:5.7
+        restart: always
+        container_name: shopdb
+        environment:
+            MYSQL_ROOT_PASSWORD: guess123
+            MYSQL_DATABASE: shop
+            MYSQL_USER: shop
+            MYSQL_PASSWORD: 123456
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        volumes:
+            - ./mysql/conf:/etc/mysql/conf.d
+            - ./mysql/data:/var/lib/mysql
+            - ./mysql/logs:/var/log/mysql
+            - ./mysql/shop.sql:/docker-entrypoint-initdb.d/shop.sql
+        networks:
+            - db_net
+        ports:
+            - 127.0.0.1:3306:3306
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq
+        volumes:
+            - ./rabbitmq/data:/var/lib/rabbitmq
+            - ./rabbitmq/logs:/var/log/rabbitmq
+        networks:
+            - db_net
+    backend:
+        build:
+            context: ./shopsystem
+            dockerfile: Dockerfile
+        image: shopsystem:latest
+        restart: always
+        container_name: backend
+        environment:
+            MYSQL_DB_HOST: shopdb
+            MYSQL_DB_PORT: 3306
+            MYSQL_DB: shop
+            MYSQL_USER: shop
+            MYSQL_PASSWORD: 123456
+            MQ_HOST: rabbitmq
+            MQ_PORT: 5672
+            MQ_USER: guest
+            MQ_PASS: guest
+        volumes:
+            - ./shopsystem/image:/usr/local/tomcat/image
+        depends_on:
+            - shopdb
+            - rabbitmq
+        networks:
+            - db_net
+            - api_net
+        ports:
+            - 127.0.0.1:8080:8080
+
+networks:
+    db_net:
+        driver: bridge
+    api_net:
+        driver: bridge
