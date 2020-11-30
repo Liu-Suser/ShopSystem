@@ -87,7 +87,7 @@ public class UserNormal {
         this.nickname = user.getNickname();
         this.userPoint = user.getUserPoint();
         this.phone = user.getPhone();
-        this.role = user.getRole();
+        this.role = user.getRoleName();
         this.createTime = user.getCreateTime();
     }
 }

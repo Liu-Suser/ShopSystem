@@ -110,11 +110,15 @@ public class User implements Serializable {
         this.answer = answer;
     }
 
-    public UserRole getRole() {
+    public UserRole getRoleName() {
         return role;
     }
 
-    public List<SimpleGrantedAuthority> getRoles() {
+    public Integer getRole() {
+        return role.getRole();
+    }
+
+    public List<SimpleGrantedAuthority> getRoleAuthority() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         String roleStr;
         switch (role) {

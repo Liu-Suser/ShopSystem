@@ -17,8 +17,8 @@ public class JwtUser implements UserDetails {
         id = user.getId();
         username = user.getUsername();
         password = user.getPassword();
-        authority = user.getRoles();
-        role = user.getRole();
+        authority = user.getRoleAuthority();
+        role = user.getRoleName();
     }
 
     @Override

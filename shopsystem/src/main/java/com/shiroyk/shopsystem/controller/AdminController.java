@@ -69,10 +69,12 @@ public class AdminController {
         return userService.findAll();
     }
 
-    @GetMapping("/user/{username}")
+    @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public User getUserInfo(@PathVariable String username) {
-        return userService.findUserByUsername(username);
+    public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
+        return userService.findById(userId)
+                .map(user -> ResponseEntity.ok().body(user))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/user/search")
@@ -159,7 +161,7 @@ public class AdminController {
         User user = userService.getCurrentUser();
         List<OrderMsg> msgList = null;
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRole()) {
+        switch (user.getRoleName()) {
             case Admin:
             case Service:
                 msgList = orderTotalService.findAllOrder(pageable);
@@ -173,7 +175,7 @@ public class AdminController {
 
     @GetMapping("/order/pageSize")
     public Long getOrderPageSize() {
-        switch (userService.getCurrentUser().getRole()) {
+        switch (userService.getCurrentUser().getRoleName()) {
             case Admin:
             case Service:
                 return orderTotalService.getOrderCount();
@@ -193,7 +195,7 @@ public class AdminController {
         User normalUser = userService.findUserByUsername(username);
         List<OrderMsg> msgList = null;
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRole()) {
+        switch (user.getRoleName()) {
             case Admin:
             case Service:
                 msgList = orderTotalService.searchUserOrder(pageable, normalUser);
@@ -235,13 +237,13 @@ public class AdminController {
                                                        Boolean isDelete
                                                          ) {
         User user = userService.getCurrentUser();
-        logger.warn("User role: "+user.getRoles().toString());
+        logger.warn("User role: "+user.getRoleAuthority().toString());
 
         return orderTotalService.findById(orderId)
                 .map(orderTotal -> {
                     String successMsg = null;
                     String failMsg = null;
-                    switch (user.getRole()) {
+                    switch (user.getRoleName()) {
                         case Admin:
                             orderTotal.setPrice(price);
                             orderTotal.setStatus(status);
