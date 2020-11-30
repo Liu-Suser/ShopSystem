@@ -11,7 +11,7 @@
           <h4>{{userInfo.username}}</h4>
         </div>
         <div class="user-detail">
-          <h4 v-show="role == 3">积分<i class="el-icon-coin"></i> {{userInfo.userpoint}}</h4>
+          <h4 v-show="role == 3">积分<i class="el-icon-coin"></i> {{userInfo.userPoint}}</h4>
           <h4>手机<i class="el-icon-phone-outline"></i> {{userInfo.phone}}</h4>
           <h4>权限<i class="el-icon-user"></i> {{userRole[role]}}</h4>
         </div>
