@@ -30,7 +30,7 @@ public class User implements Serializable {
     private String nickname;
 
     @Column(name = "userpoint")
-    private Integer userPoint = 0;
+    private Integer userpoint = 0;
 
     private String phone;
 
@@ -79,11 +79,11 @@ public class User implements Serializable {
     }
 
     public Integer getUserPoint() {
-        return userPoint;
+        return userpoint;
     }
 
-    public void setUserPoint(Integer userPoint) {
-        this.userPoint = userPoint;
+    public void setUserPoint(Integer userpoint) {
+        this.userpoint = userpoint;
     }
 
     public String getPhone() {

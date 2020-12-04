@@ -2,7 +2,7 @@
 
 
 ## 项目介绍
-ShopSystem是一个简单的网络商城系统，前端基于Vue.Js + Element UI，后端基于SpringBoot + Hibernate。前台模块包括商品展示、商品搜索、订单模块、购物车、注册登录等，后台模块包括分类管理、商品管理、订单管理、用户管理等。采用`docker compose`容器编排。
+ShopSystem是一个简单的网络商城系统，前端基于Vue.Js + Element UI，后端基于SpringBoot + Spring Data JPA。前台模块包括商品展示、商品搜索、订单模块、购物车、注册登录等，后台模块包括分类管理、商品管理、订单管理、用户管理等。采用`docker compose`容器编排部署。
 
 ### 前端演示图片
 ![前端演示图片](demo/1.png)

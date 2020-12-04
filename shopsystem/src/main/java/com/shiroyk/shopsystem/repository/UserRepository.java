@@ -8,7 +8,6 @@ package com.shiroyk.shopsystem.repository;
 import com.shiroyk.shopsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -18,8 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT user.question FROM User user WHERE user.username = :username")
     Optional<String> getAnswerByUsername(@Param("username") String username);
-
-    List<User> findAll();
 
     List<User> findUsersByUsernameContains(String username);
 

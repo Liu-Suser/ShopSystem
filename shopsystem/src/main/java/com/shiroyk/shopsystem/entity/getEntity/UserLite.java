@@ -15,7 +15,7 @@ public class UserLite {
 
     private String nickname;
 
-    private Integer userPoint;
+    private Integer userpoint;
 
     public Long getId() {
         return id;
@@ -42,17 +42,17 @@ public class UserLite {
     }
 
     public Integer getUserPoint() {
-        return userPoint;
+        return userpoint;
     }
 
-    public void setUserPoint(Integer userPoint) {
-        this.userPoint = userPoint;
+    public void setUserPoint(Integer userpoint) {
+        this.userpoint = userpoint;
     }
 
     public UserLite(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.nickname = user.getNickname();
-        this.userPoint = user.getUserPoint();
+        this.userpoint = user.getUserPoint();
     }
 }
