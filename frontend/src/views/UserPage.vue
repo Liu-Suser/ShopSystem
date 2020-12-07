@@ -1149,32 +1149,28 @@ export default {
         })
     },
     filterCategory(res) {
-      res.forEach(a => {
-        if (a.parentId == 0) {
-          let cate = {
-            id: a.id,
-            name: a.name,
-            status: a.status,
+      let childArray = []
+      while (res.length > 0) {
+        let r = res.pop()
+        if (r.parentId == 0) {
+          this.categoryArray.push({
+            id: r.id,
+            name: r.name,
+            status: r.status,
             parent: '根分类',
             parentId: 0,
             children: []
-          }
-          this.categoryArray.push(cate)
-        } else {
-          let child = {
-            id: a.id,
-            name: a.name,
-            status: a.status,
-            parentId: a.parentId
-          }
-          this.categoryArray.forEach(b => {
-            if (b.id == a.parentId) {
-              child.parent = b.name
-              b.children.push(child)
-            }
           })
+        } else {
+          childArray.push(r)
         }
+      }
+      this.categoryArray.map(item => {
+        item.children = childArray.filter(function(child) {
+          return child.parentId == item.id
+        })
       })
+      console.log(this.categoryArray)
     },
     getUserAddres() {
       this.$axios
@@ -1182,11 +1178,9 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.addressArray = res.data
-            this.addressArray.forEach(add => {
-              if (add.default == true) {
-                this.address = add
-              }
-            })
+            this.address = this.addressArray.filter(function(add) {
+              return add.default == true
+            })[0]
           }
         })
         .catch(() => {})
@@ -1287,8 +1281,8 @@ export default {
         })
     },
     imageToStr(images) {
-      let str = '['
       if (images && images.length > 0) {
+        let str = '['
         for (let index = 0; index < images.length; index++) {
           str += '{"url": "' + images[index].url + '"}'
           if (index != images.length - 1) {

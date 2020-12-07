@@ -13,7 +13,7 @@
       >
         <template slot="title">{{ a.name }}</template>
         <el-menu-item
-          v-for="b in a.childern"
+          v-for="b in a.children"
           :key="b.id"
           :index="b.id+''"
           @click="pushCategory(b)"
@@ -28,39 +28,34 @@
 export default {
   data() {
     return {
-      category: [],
+      category: []
     }
   },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
-    },
     filterCategory(res) {
-      res.forEach((a) => {
-        if (a.parentId == 0) {
-          let cate = new Array()
-          cate.id = a.id
-          cate.name = a.name
-          cate.status = a.status
-          cate.childern = new Array()
-          this.category.push(cate)
-        } else {
-          let child = new Array()
-          child.id = a.id
-          child.name = a.name
-          child.status = a.status
-          this.category.forEach((b) => {
-            if (b.id == a.parentId) {
-              b.childern.push(child)
-            }
+      let childArray = []
+      while (res.length > 0) {
+        let r = res.pop()
+        if (r.parentId == 0) {
+          this.category.push({
+            id: r.id,
+            name: r.name,
+            status: r.status
           })
+        } else {
+          childArray.push(r)
         }
+      }
+      this.category.map(item => {
+        item.children = childArray.filter(function(child) {
+          return child.parentId == item.id
+        })
       })
     },
     getAllCategory() {
       this.$axios
         .get('/category')
-        .then((res) => {
+        .then(res => {
           if (res.status == 200) {
             this.filterCategory(res.data)
           }
@@ -69,11 +64,11 @@ export default {
     },
     pushCategory(category) {
       this.$router.push({ path: '/category', query: { id: category.id } })
-    },
+    }
   },
-  created: function () {
+  created: function() {
     this.getAllCategory()
-  },
+  }
 }
 </script>
 

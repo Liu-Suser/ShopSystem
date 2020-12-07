@@ -107,11 +107,9 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.addressArray = res.data
-            this.addressArray.forEach(add => {
-              if (add.default == true) {
-                this.address = add
-              }
-            })
+            this.address = this.addressArray.filter(function(add) {
+              return add.default == true
+            })[0]
             if (!this.address) {
               this.address = this.addressArray[0]
             }
