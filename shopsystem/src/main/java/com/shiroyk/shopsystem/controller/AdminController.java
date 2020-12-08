@@ -91,7 +91,7 @@ public class AdminController {
                                                   String phone,
                                                   String question,
                                                   String answer,
-                                                  UserRole role) {
+                                                  Integer role) {
         //管理员创建用户
         User user = userService.findUserByUsername(username);
         if (user != null) {
@@ -118,9 +118,12 @@ public class AdminController {
                                                   String phone,
                                                   String question,
                                                   String answer,
-                                                  UserRole role) {
+                                                  Integer role) {
         //管理员修改用户
         User user = userService.findUserByUsername(username);
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMsg(HttpStatus.NOT_FOUND, "用户不存在！"));
         if (password != null) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(password));
@@ -132,13 +135,13 @@ public class AdminController {
                                                  String phone,
                                                  String question,
                                                  String answer,
-                                                 UserRole role,
+                                                 Integer role,
                                                  User user) {
         user.setNickname(nickname);
         user.setPhone(phone);
         user.setQuestion(question);
         user.setAnswer(answer);
-        user.setRole(role);
+        user.setRole(UserRole.values()[role]);
         userService.save(user);
         return ResponseEntity.ok()
                 .body(new ResponseMsg(HttpStatus.OK, "保存用户成功！"));

@@ -71,30 +71,22 @@ public class UserController {
         this.statisticSender = statisticSender;
     }
 
+    @PutMapping("/password")
+    public ResponseEntity<ResponseMsg> updatePassword(String newPassword) {
+        //角色修改自己的密码
+        User user = userService.getCurrentUser();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        user.setPassword(encoder.encode(newPassword));
+        userService.save(user);
+        return ResponseEntity.ok()
+                .body(new ResponseMsg(HttpStatus.OK, "修改密码成功！"));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserLite> getUserInfo(@PathVariable Long userId) {
         return userService.findById(userId)
                 .map(user -> ResponseEntity.ok().body(new UserLite(user)))
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/signup")
-    public ResponseEntity<ResponseMsg> signUp(String username,
-                                              String password,
-                                              String nickname,
-                                              String phone) {
-        if (userService.findUserByUsername(username) != null) {
-            return ResponseEntity.badRequest().body(new ResponseMsg(HttpStatus.BAD_REQUEST,"用户已存在！"));
-        } else {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(encoder.encode(password));
-            user.setPhone(phone);
-            user.setNickname(nickname);
-            userService.save(user);
-            return ResponseEntity.ok().body(new ResponseMsg(HttpStatus.OK,"注册成功！"));
-        }
     }
 
     @GetMapping("/info")
@@ -125,44 +117,6 @@ public class UserController {
         userService.save(user);
         return ResponseEntity.ok()
                 .body(new ResponseMsg(HttpStatus.OK, "修改信息成功！"));
-    }
-
-    @PutMapping("/password")
-    public ResponseEntity<ResponseMsg> updatePassword(String newPassword) {
-        //角色修改自己的密码
-        User user = userService.getCurrentUser();
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        user.setPassword(encoder.encode(newPassword));
-        userService.save(user);
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, "修改密码成功！"));
-    }
-
-    @GetMapping("/question")
-    public ResponseEntity<ResponseMsg> getForgetQuestion(@RequestParam("username") String username) {
-        //获取用户的安全问题
-        Optional<String> question = userService.getAnswerByUsername(username);
-        return question.map(s -> ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, s))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMsg(HttpStatus.NOT_FOUND, "用户不存在！")));
-    }
-
-    @PutMapping("/forget")
-    public ResponseEntity<ResponseMsg> forgetPassword(String username,
-                                                      String answer,
-                                                      String newPassword) {
-        //对比安全问题答案，相同则修改密码
-        User user = userService.findUserByUsername(username);
-        if (user.getAnswer().equals(answer)) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            user.setPassword(encoder.encode(newPassword));
-            userService.save(user);
-            return ResponseEntity.ok()
-                    .body(new ResponseMsg(HttpStatus.OK, "修改密码成功！"));
-        } else {
-            return ResponseEntity.badRequest()
-                    .body(new ResponseMsg(HttpStatus.BAD_REQUEST, "修改密码失败！"));
-        }
     }
 
     @GetMapping("/order")

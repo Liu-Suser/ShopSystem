@@ -10,5 +10,5 @@ public class JwtConstants {
     public static final String SECRET = "ThisIsASecret";
     public static final String TOKEN_PREFIX = "Bearer";
     public static final String HEADER_STRING = "Authorization";
-    public static final String AUTH_LOGIN_URL = "/user/login";
+    public static final String AUTH_LOGIN_URL = "/auth/login";
 }

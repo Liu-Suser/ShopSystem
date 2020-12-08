@@ -34,7 +34,7 @@ docker-compose up -d
 ### 后端API测试
 使用API测试工具`Postman`导入项目下`ShopSystem.postman_collection.json`文件<br>
 首先设置全局变量`baseurl`为`localhost:8080`<br>
-然后获取Token，用户名密码：
+然后访问/auth/login接口获取Token，用户名密码：
 | 权限     | 用户名    | 密码      |
 | -------- | --------- | --------- |
 | 管理员   | admin     | admin     |

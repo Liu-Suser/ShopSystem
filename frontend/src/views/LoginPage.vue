@@ -184,7 +184,7 @@ export default {
           password: this.loginForm.password
         })
         this.$axios
-          .post('/user/login', params)
+          .post('/auth/login', params)
           .then(res => {
             if (res.status == 200) {
               this.$message.success('登录成功！')
@@ -212,7 +212,7 @@ export default {
         phone: this.loginForm.phone
       })
       this.$axios
-        .post('/user/signup', params)
+        .post('/auth/signup', params)
         .then(res => {
           if (res.status == 200) {
             this.$message.success('注册成功！')
@@ -225,7 +225,7 @@ export default {
     },
     getResetQuention() {
       this.$axios
-        .get('/user/question?username=' + this.loginForm.username)
+        .get('/auth/question?username=' + this.loginForm.username)
         .then(res => {
           if (res.status == 200) {
             this.$message.success('获取密保问题成功！')
@@ -245,7 +245,7 @@ export default {
         newPassword: this.resetForm.password
       })
       this.$axios
-        .put('/user/forget', params)
+        .put('/auth/forget', params)
         .then(res => {
           if (res.status == 200) {
             this.$message.success('重置密码成功！')

@@ -9,145 +9,6 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "/user/login",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "f3b40942-5e38-49dc-b959-56addae3e84c",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"id": "13e59ad4-12cb-4ece-b8a7-697a6f8cd007",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"pm.globals.set(\"token\", jsonData.token);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "admin",
-									"type": "text"
-								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://{{baseurl}}/user/login",
-							"protocol": "http",
-							"host": [
-								"{{baseurl}}"
-							],
-							"path": [
-								"user",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/user/signup",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "username",
-									"value": "test",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "test",
-									"type": "text"
-								},
-								{
-									"key": "nickname",
-									"value": "test",
-									"type": "text"
-								},
-								{
-									"key": "phone",
-									"value": "110",
-									"type": "text"
-								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://{{baseurl}}/user/signup",
-							"protocol": "http",
-							"host": [
-								"{{baseurl}}"
-							],
-							"path": [
-								"user",
-								"signup"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/user/question",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://{{baseurl}}/user/question?username=admin",
-							"protocol": "http",
-							"host": [
-								"{{baseurl}}"
-							],
-							"path": [
-								"user",
-								"question"
-							],
-							"query": [
-								{
-									"key": "username",
-									"value": "admin"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "/user/info",
 					"event": [
 						{
@@ -1179,7 +1040,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/shiroyk/Documents/Work/ShopSystem/shopsystem/image/1.jpg"
+									"src": "/Users/shiroyk/Documents/Work/ShopSystem/ShopSystemBackend/image/1.jpg"
 								}
 							],
 							"options": {
@@ -1774,7 +1635,7 @@
 								},
 								{
 									"key": "role",
-									"value": "Support",
+									"value": "3",
 									"type": "text"
 								}
 							]
@@ -1881,6 +1742,196 @@
 							"path": [
 								"admin",
 								"statistic"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "/auth/login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f3b40942-5e38-49dc-b959-56addae3e84c",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "13e59ad4-12cb-4ece-b8a7-697a6f8cd007",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.globals.set(\"token\", jsonData.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/auth/login",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "nickname",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "110",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/auth/signup",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/question",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/auth/question?username=admin",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"question"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/forget",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "answer",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "newPassword",
+									"value": "test",
+									"type": "text"
+								}
+							],
+							"options": {
+								"urlencoded": {}
+							}
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/auth/forget",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"forget"
 							]
 						}
 					},
