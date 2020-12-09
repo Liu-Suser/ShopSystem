@@ -8,7 +8,6 @@ package com.shiroyk.shopsystem.entity.getEntity;
 import com.shiroyk.shopsystem.entity.Comment;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class CommentLite {
     private Long id;

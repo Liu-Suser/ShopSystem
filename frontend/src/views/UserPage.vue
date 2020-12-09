@@ -1020,6 +1020,7 @@ export default {
             this.userInfo = res.data
             if (this.userInfo.role == 3) {
               this.getUserAddres()
+              this.editUserInfo = this.userInfo
             }
             if ([0, 1].indexOf(this.userInfo.role) > -1) {
               this.getAllCategory()

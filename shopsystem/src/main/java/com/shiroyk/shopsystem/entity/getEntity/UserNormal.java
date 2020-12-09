@@ -10,52 +10,13 @@ import com.shiroyk.shopsystem.entity.User;
 
 import java.time.LocalDateTime;
 
-public class UserNormal {
-    private Long id;
-
-    private String username;
-
-    private String nickname;
-
-    private Integer userpoint;
+public class UserNormal extends UserLite {
 
     private String phone;
 
     private UserRole role;
 
     private LocalDateTime createTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Integer getUserPoint() {
-        return userpoint;
-    }
-
-    public void setUserPoint(Integer userpoint) {
-        this.userpoint = userpoint;
-    }
 
     public String getPhone() {
         return phone;
@@ -82,10 +43,7 @@ public class UserNormal {
     }
 
     public UserNormal(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.nickname = user.getNickname();
-        this.userpoint = user.getUserPoint();
+        super(user);
         this.phone = user.getPhone();
         this.role = user.getRoleName();
         this.createTime = user.getCreateTime();

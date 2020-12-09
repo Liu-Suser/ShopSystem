@@ -32,8 +32,6 @@ services:
             - ./mysql/shop.sql:/docker-entrypoint-initdb.d/shop.sql
         networks:
             - db_net
-        ports:
-            - 127.0.0.1:3306:3306
     rabbitmq:
         image: rabbitmq:3-management
         container_name: rabbitmq
