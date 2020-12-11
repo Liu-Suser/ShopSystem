@@ -8,8 +8,8 @@ package com.shiroyk.shopsystem.service;
 import com.shiroyk.shopsystem.constant.OrderStatus;
 import com.shiroyk.shopsystem.entity.OrderTotal;
 import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.entity.getEntity.OrderMsg;
-import com.shiroyk.shopsystem.entity.getEntity.OrderMsgDetail;
+import com.shiroyk.shopsystem.dto.response.OrderResponse;
+import com.shiroyk.shopsystem.dto.response.OrderDetailResponse;
 import com.shiroyk.shopsystem.repository.OrderDetailRepository;
 import com.shiroyk.shopsystem.repository.OrderTotalRepository;
 import org.springframework.data.domain.Pageable;
@@ -55,61 +55,61 @@ public class OrderTotalService {
         return orderTotalRepository.findById(id);
     }
 
-    public Optional<OrderMsg> findOrderMsgById(Long id) {
-        return orderTotalRepository.findById(id).map(this::orderTotalToOrderMsg);
+    public Optional<OrderResponse> findOrderResponseById(Long id) {
+        return orderTotalRepository.findById(id).map(this::orderTotalToOrderResponse);
     }
 
-    public List<OrderMsg> findAllOrder(Pageable pageable) {
-        return OrderMsgIterable(orderTotalRepository.findBy(pageable));
+    public List<OrderResponse> findAllOrder(Pageable pageable) {
+        return OrderResponseIterable(orderTotalRepository.findBy(pageable));
     }
 
-    public List<OrderMsg> searchUserOrder(Pageable pageable, User user) {
-        return OrderMsgIterable(
+    public List<OrderResponse> searchUserOrder(Pageable pageable, User user) {
+        return OrderResponseIterable(
                 orderTotalRepository.findOrderTotalsByUserId(pageable, user));
     }
 
-    public List<OrderMsg> searchUserOrderAndDeleteFalse(Pageable pageable, User user) {
-        return OrderMsgIterable(
+    public List<OrderResponse> searchUserOrderAndDeleteFalse(Pageable pageable, User user) {
+        return OrderResponseIterable(
                 orderTotalRepository.findOrderTotalsByUserIdAndIsDeleteFalse(pageable, user));
     }
 
 
-    public List<OrderMsg> findOrdersWarehouse(Pageable pageable) {
+    public List<OrderResponse> findOrdersWarehouse(Pageable pageable) {
         return Stream.of(
-                findOrderMsgByStatus(pageable, OrderStatus.Payed),
-                findOrderMsgByStatus(pageable, OrderStatus.Shipped),
-                findOrderMsgByStatus(pageable, OrderStatus.Transit))
+                findOrderResponseByStatus(pageable, OrderStatus.Payed),
+                findOrderResponseByStatus(pageable, OrderStatus.Shipped),
+                findOrderResponseByStatus(pageable, OrderStatus.Transit))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderMsg> searchUserOrderMsgByWarehouse(Pageable pageable, User user) {
+    public List<OrderResponse> searchUserOrderResponseByWarehouse(Pageable pageable, User user) {
         return Stream.of(
-                searchUserOrderMsgByStatus(pageable, user, OrderStatus.Payed),
-                searchUserOrderMsgByStatus(pageable, user, OrderStatus.Shipped),
-                searchUserOrderMsgByStatus(pageable, user, OrderStatus.Transit))
+                searchUserOrderResponseByStatus(pageable, user, OrderStatus.Payed),
+                searchUserOrderResponseByStatus(pageable, user, OrderStatus.Shipped),
+                searchUserOrderResponseByStatus(pageable, user, OrderStatus.Transit))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    public List<OrderMsg> findOrderMsgByStatus(Pageable pageable, OrderStatus status) {
-        return OrderMsgIterable(
+    public List<OrderResponse> findOrderResponseByStatus(Pageable pageable, OrderStatus status) {
+        return OrderResponseIterable(
                 orderTotalRepository.findOrderTotalsByStatus(pageable, status));
     }
 
-    public List<OrderMsg> searchUserOrderMsgByStatus(Pageable pageable, User user, OrderStatus status) {
-        return OrderMsgIterable(
+    public List<OrderResponse> searchUserOrderResponseByStatus(Pageable pageable, User user, OrderStatus status) {
+        return OrderResponseIterable(
                 orderTotalRepository.findOrderTotalsByUserIdAndStatus(pageable, user, status));
     }
 
-    private OrderMsg orderTotalToOrderMsg(OrderTotal total) {
-        return new OrderMsg(total, orderDetailRepository
+    private OrderResponse orderTotalToOrderResponse(OrderTotal total) {
+        return new OrderResponse(total, orderDetailRepository
                 .findOrderDetailByOrderIdId(total.getId())
-                .stream().map(OrderMsgDetail::new)
+                .stream().map(OrderDetailResponse::new)
                 .collect(Collectors.toList()));
     }
 
-    private List<OrderMsg> OrderMsgIterable(List<OrderTotal> totalList) {
-        return totalList.stream().map(this::orderTotalToOrderMsg).collect(Collectors.toList());
+    private List<OrderResponse> OrderResponseIterable(List<OrderTotal> totalList) {
+        return totalList.stream().map(this::orderTotalToOrderResponse).collect(Collectors.toList());
     }
 }

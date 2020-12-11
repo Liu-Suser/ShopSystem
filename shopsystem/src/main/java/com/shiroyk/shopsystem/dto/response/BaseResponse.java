@@ -3,13 +3,13 @@
  * Created by shiroyk, https://github.com/shiroyk
  */
 
-package com.shiroyk.shopsystem.entity.getEntity;
+package com.shiroyk.shopsystem.dto.response;
 
 import org.springframework.http.HttpStatus;
 
-public class ResponseMsg {
-    HttpStatus status;
-    String msg;
+public class BaseResponse {
+    private HttpStatus status;
+    private String msg;
 
     public int getStatus() {
         return status.value();
@@ -27,7 +27,12 @@ public class ResponseMsg {
         this.msg = msg;
     }
 
-    public ResponseMsg(HttpStatus status, String msg) {
+    public BaseResponse(String msg) {
+        this.status = HttpStatus.OK;
+        this.msg = msg;
+    }
+
+    public BaseResponse(HttpStatus status, String msg) {
         this.status = status;
         this.msg = msg;
     }

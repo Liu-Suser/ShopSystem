@@ -1,11 +1,10 @@
 package com.shiroyk.shopsystem.entity;
 
-import com.shiroyk.shopsystem.entity.getEntity.UserLite;
+import com.shiroyk.shopsystem.dto.response.UserLite;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "cart")

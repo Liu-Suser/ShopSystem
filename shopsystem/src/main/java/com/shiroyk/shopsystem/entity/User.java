@@ -109,11 +109,11 @@ public class User implements Serializable {
         this.answer = answer;
     }
 
-    public UserRole getRoleName() {
+    public UserRole getRole() {
         return role;
     }
 
-    public Integer getRole() {
+    public Integer getRoleInt() {
         return role.getRole();
     }
 

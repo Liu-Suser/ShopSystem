@@ -8,6 +8,8 @@ package com.shiroyk.shopsystem.controller;
 import com.shiroyk.shopsystem.entity.Comment;
 import com.shiroyk.shopsystem.entity.Image;
 import com.shiroyk.shopsystem.entity.Product;
+import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.AdvertService;
 import com.shiroyk.shopsystem.service.CommentService;
 import com.shiroyk.shopsystem.service.FileService;
@@ -47,36 +49,36 @@ public class ProductController {
     }
 
     @GetMapping("/pageSize")
-    public Long getPageSize() {
-        return productService.getProductCount();
+    public SuccessResponse<Long> getPageSize() {
+        return SuccessResponse.create(productService.getProductCount());
     }
 
     @GetMapping()
-    public List<Product> getProductList(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public SuccessResponse<List<Product>> getProductList(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
         Pageable pageable = PageRequest.of(page, PAGESIZE);
-        return productService.findAll(pageable);
+        return SuccessResponse.create(productService.findAll(pageable));
     }
 
     @GetMapping("/banner")
-    public Image[] getBanner() {
-        return advertService.getAdvert().getImage();
+    public SuccessResponse<Image[]> getBanner() {
+        return SuccessResponse.create(advertService.getAdvert().getImage());
     }
 
     @GetMapping("/search")
-    public List<Product> searchProduct(@RequestParam("product") String product) {
-        return productService.searchProducts(product);
+    public SuccessResponse<List<Product>> searchProduct(@RequestParam("product") String product) {
+        return SuccessResponse.create(productService.searchProducts(product));
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProduct(@PathVariable Long productId) {
+    public SuccessResponse<Product> getProduct(@PathVariable Long productId) {
         return productService.findById(productId)
-                .map(product -> ResponseEntity.ok().body(product))
-                .orElse(ResponseEntity.notFound().build());
+                .map(SuccessResponse::create)
+                .orElseThrow(NotFoundResourceException::new);
     }
 
     @GetMapping("/{productId}/comment")
-    public List<Comment> getProductComment(@PathVariable Long productId) {
-        return commentService.findCommentByProductId(productId);
+    public SuccessResponse<List<Comment>> getProductComment(@PathVariable Long productId) {
+        return SuccessResponse.create(commentService.findCommentByProductId(productId));
     }
 
     @GetMapping("/image/{fileName:.+}")
@@ -85,7 +87,7 @@ public class ProductController {
             Resource resource = fileService.loadImageAsResource(fileName);
 
             if (resource == null) {
-                return ResponseEntity.notFound().build();
+                throw new NotFoundResourceException();
             }
             String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
             if(contentType == null) {
@@ -97,7 +99,7 @@ public class ProductController {
                     .body(resource);
         } catch (IOException ex) {
             ex.printStackTrace();
-            return ResponseEntity.notFound().build();
+            throw new NotFoundResourceException();
         }
     }
 }

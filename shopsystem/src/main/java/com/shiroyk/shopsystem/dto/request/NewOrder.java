@@ -3,7 +3,7 @@
  * Created by shiroyk, https://github.com/shiroyk
  */
 
-package com.shiroyk.shopsystem.entity.postEntity;
+package com.shiroyk.shopsystem.dto.request;
 
 import java.util.List;
 import java.util.Map;

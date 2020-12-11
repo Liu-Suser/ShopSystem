@@ -7,9 +7,7 @@ package com.shiroyk.shopsystem.service;
 
 import com.shiroyk.shopsystem.entity.JwtUser;
 import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.entity.getEntity.UserLite;
 import com.shiroyk.shopsystem.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +20,12 @@ import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
-    UserRepository userRepository;
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -1,15 +1,13 @@
 package com.shiroyk.shopsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.shiroyk.shopsystem.constant.OrderStatus;
-import com.shiroyk.shopsystem.entity.getEntity.UserLite;
+import com.shiroyk.shopsystem.dto.response.UserLite;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "order_total")

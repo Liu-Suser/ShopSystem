@@ -3,7 +3,7 @@
  * Created by shiroyk, https://github.com/shiroyk
  */
 
-package com.shiroyk.shopsystem.entity.getEntity;
+package com.shiroyk.shopsystem.dto.response;
 
 import com.shiroyk.shopsystem.entity.Comment;
 

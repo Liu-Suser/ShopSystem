@@ -3,13 +3,13 @@
  * Created by shiroyk, https://github.com/shiroyk
  */
 
-package com.shiroyk.shopsystem.entity.getEntity;
+package com.shiroyk.shopsystem.dto.response;
 
 import com.shiroyk.shopsystem.entity.OrderDetail;
 
 import java.math.BigDecimal;
 
-public class OrderMsgDetail {
+public class OrderDetailResponse {
     private Long id;
     private ProductLite product;
     private CommentLite comment;
@@ -56,7 +56,7 @@ public class OrderMsgDetail {
         this.payment = payment;
     }
 
-    public OrderMsgDetail(OrderDetail orderDetail) {
+    public OrderDetailResponse(OrderDetail orderDetail) {
         this.id = orderDetail.getId();
         this.product = new ProductLite(orderDetail.getProductId());
         if (orderDetail.getCommentId() != null) {

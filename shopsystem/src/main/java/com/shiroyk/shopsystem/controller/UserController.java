@@ -11,19 +11,19 @@ import com.shiroyk.shopsystem.component.StatisticSender;
 import com.shiroyk.shopsystem.constant.OrderStatus;
 import com.shiroyk.shopsystem.constant.StatisticEnum;
 import com.shiroyk.shopsystem.entity.*;
-import com.shiroyk.shopsystem.entity.getEntity.OrderMsg;
-import com.shiroyk.shopsystem.entity.getEntity.ResponseMsg;
-import com.shiroyk.shopsystem.entity.getEntity.UserLite;
-import com.shiroyk.shopsystem.entity.getEntity.UserNormal;
-import com.shiroyk.shopsystem.entity.postEntity.NewOrder;
+import com.shiroyk.shopsystem.dto.response.OrderResponse;
+import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.dto.response.UserNormal;
+import com.shiroyk.shopsystem.dto.request.NewOrder;
+import com.shiroyk.shopsystem.exception.BadRequestException;
+import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -72,34 +72,33 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<ResponseMsg> updatePassword(String newPassword) {
+    public SuccessResponse<Object> updatePassword(String newPassword) {
         //角色修改自己的密码
         User user = userService.getCurrentUser();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(newPassword));
         userService.save(user);
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, "修改密码成功！"));
+        return SuccessResponse.create("修改密码成功！");
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserLite> getUserInfo(@PathVariable Long userId) {
+    public SuccessResponse<User> getUserInfo(@PathVariable Long userId) {
         return userService.findById(userId)
-                .map(user -> ResponseEntity.ok().body(new UserLite(user)))
-                .orElse(ResponseEntity.notFound().build());
+                .map(SuccessResponse::create)
+                .orElseThrow(() -> new NotFoundResourceException("未找到该用户！"));
     }
 
     @GetMapping("/info")
-    public UserNormal getInfo() {
-        return new UserNormal(userService.getCurrentUser());
+    public SuccessResponse<UserNormal> getInfo() {
+        return SuccessResponse.create(new UserNormal(userService.getCurrentUser()));
     }
 
     @PutMapping("/info")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> updateInfo(String nickname,
-                                                  String phone,
-                                                  String question,
-                                                  String answer) {
+    public SuccessResponse<Object> updateInfo(String nickname,
+                                              String phone,
+                                              String question,
+                                              String answer) {
         User user = userService.getCurrentUser();
 
         if (!StringUtils.isEmpty(nickname)) {
@@ -115,46 +114,50 @@ public class UserController {
             user.setAnswer(answer);
         }
         userService.save(user);
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, "修改信息成功！"));
+        return SuccessResponse.create("修改信息成功！");
+    }
+
+    @GetMapping("/order/pageSize")
+    @PreAuthorize("hasRole('NORMAL')")
+    public SuccessResponse<Long> getOrderPageSize() {
+        User user = userService.getCurrentUser();
+        return SuccessResponse.create(orderTotalService.getOrderCountByUser(user));
     }
 
     @GetMapping("/order")
     @PreAuthorize("hasRole('NORMAL')")
-    public List<OrderMsg> getUserOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public SuccessResponse<List<OrderResponse>> getUserOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
         //普通用户获得自己的所有订单
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by(Sort.Direction.DESC, "createTime"));
-        return orderTotalService.searchUserOrderAndDeleteFalse(pageable, user);
+        return SuccessResponse.create(orderTotalService.searchUserOrderAndDeleteFalse(pageable, user));
     }
 
     @GetMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<?> getOrder(@PathVariable Long orderId) {
+    public SuccessResponse<OrderResponse> getOrder(@PathVariable Long orderId) {
         //普通用户获得自己的订单详情
         User user = userService.getCurrentUser();
-        return orderTotalService.findOrderMsgById(orderId)
-        .map(orderMsg -> {
-            if (user.getId().equals(orderMsg.getUser().getId())) {
-                return ResponseEntity.ok().body(orderMsg);
+        return orderTotalService.findOrderResponseById(orderId)
+        .map(orderResponse -> {
+            if (user.getId().equals(orderResponse.getUser().getId())) {
+                return SuccessResponse.create(orderResponse);
             }
-            return ResponseEntity.notFound().build();
-        }).orElse(ResponseEntity.notFound().build());
+            throw new NotFoundResourceException();
+        }).orElseThrow(NotFoundResourceException::new);
     }
 
     @PostMapping("/order")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> createOrder(@RequestBody NewOrder newOrder) {
+    public SuccessResponse<Object> createOrder(@RequestBody NewOrder newOrder) {
         //用户新建订单
         User user = userService.getCurrentUser();
         Optional<Address> address = addressService.findById(newOrder.getAid());
         if (!address.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseMsg(HttpStatus.NOT_FOUND, "未找到该地址！"));
+            throw new NotFoundResourceException("未找到该地址！");
         } else {
             if (!user.getId().equals(address.get().getUserId())) {
-                return ResponseEntity.badRequest()
-                        .body(new ResponseMsg(HttpStatus.BAD_REQUEST, "地址错误！"));
+                throw new BadRequestException("地址错误！");
             }
         }
 
@@ -167,22 +170,19 @@ public class UserController {
             Optional<Product> productOptional = productService.findById(o.get("pid"));
 
             if (!productOptional.isPresent()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseMsg(HttpStatus.NOT_FOUND, "商品不存在！"));
+                throw new NotFoundResourceException("商品不存在！");
             }
 
             Product product = productOptional.get();
 
             //检查是否已下架
             if (!product.getStatus()) {
-                return ResponseEntity.badRequest()
-                        .body(new ResponseMsg(HttpStatus.BAD_REQUEST, product.getName() + "商品已下架！"));
+                throw new BadRequestException(product.getName() + "商品已下架！");
             }
 
             //检查库存是否足够
             if (product.getStock() < o.get("quantity").intValue()) {
-                return ResponseEntity.badRequest()
-                        .body(new ResponseMsg(HttpStatus.BAD_REQUEST, product.getName() + "商品库存不足！"));
+                throw new BadRequestException(product.getName() + "商品库存不足！");
             }
 
             //商品单价*数量
@@ -213,20 +213,18 @@ public class UserController {
         //统计新订单
         statisticSender.sendMessage(StatisticEnum.newOrder, 5000);
 
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, "创建订单成功！"));
+        return SuccessResponse.create("创建订单成功！");
     }
 
     @PutMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> updateOrder(@PathVariable Long orderId,
-                                                   OrderStatus status,
-                                                   String payMethod) {
+    public SuccessResponse<Object> updateOrder(@PathVariable Long orderId,
+                                               OrderStatus status,
+                                               String payMethod) {
         User user = userService.getCurrentUser();
         Optional<OrderTotal> totalOptional = orderTotalService.findById(orderId);
         if (!totalOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseMsg(HttpStatus.NOT_FOUND, "未找到该订单！"));
+            throw new NotFoundResourceException("未找到该订单！");
         }
 
         OrderTotal orderTotal = totalOptional.get();
@@ -237,8 +235,7 @@ public class UserController {
         //用户只能操作自己的订单
         if (user.getId().equals(orderTotal.getUserId().getId())) {
             if (status == null) {
-                return ResponseEntity.badRequest()
-                        .body(new ResponseMsg(HttpStatus.BAD_REQUEST, "更新订单失败！"));
+                throw new BadRequestException("更新订单失败！");
             }
             switch (status) {
                 case Cancel:
@@ -310,35 +307,31 @@ public class UserController {
         orderTotal.setUpdateTime();
         orderTotalService.save(orderTotal);
         if (errorMsg != null) {
-            return ResponseEntity.badRequest()
-                    .body(new ResponseMsg(HttpStatus.BAD_REQUEST, errorMsg));
+            throw new BadRequestException(errorMsg);
         }
         if (successMsg == null) {
             successMsg = "更新订单成功！";
         }
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, successMsg));
+        return SuccessResponse.create(successMsg);
     }
 
     @DeleteMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> deleteOrder(@PathVariable Long orderId) {
+    public SuccessResponse<Object> deleteOrder(@PathVariable Long orderId) {
         //软删除用户订单
         User user = userService.getCurrentUser();
         return orderTotalService.findById(orderId).map(total -> {
             total.setDelete(true);
             orderTotalService.save(total);
-            return ResponseEntity.ok()
-                    .body(new ResponseMsg(HttpStatus.OK, "删除成功！"));
-        }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMsg(HttpStatus.NOT_FOUND, "未找到该订单！")));
+            return SuccessResponse.create("删除成功！");
+        }).orElseThrow(() -> new NotFoundResourceException("未找到该订单！"));
     }
 
     @PostMapping("/order/{orderDetailId}/comment")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> commentOrder(@PathVariable Long orderDetailId,
-                                                    Integer rate,
-                                                    String comment) {
+    public SuccessResponse<Object> commentOrder(@PathVariable Long orderDetailId,
+                                                Integer rate,
+                                                String comment) {
         //用户创建评论
         User user = userService.getCurrentUser();
         return orderDetailService.findById(orderDetailId).map(orderDetail -> {
@@ -356,73 +349,66 @@ public class UserController {
 
                 orderDetail.setCommentId(cmt);
                 orderDetailService.save(orderDetail);
-                return ResponseEntity.ok()
-                        .body(new ResponseMsg(HttpStatus.OK, "评价成功！"));
+                return SuccessResponse.create("评价成功！");
             } else {
                 errorMsg = "订单未完成，评价失败！";
             }
-            return ResponseEntity.badRequest()
-                    .body(new ResponseMsg(HttpStatus.BAD_REQUEST, errorMsg));
-        }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMsg(HttpStatus.NOT_FOUND, "未找到该订单！")));
+            throw new BadRequestException(errorMsg);
+        }).orElseThrow(() -> new NotFoundResourceException("未找到该订单！"));
     }
 
     @GetMapping("/address")
     @PreAuthorize("hasRole('NORMAL')")
-    public List<Address> getUserAddress() {
-        return addressService.findAllByUserIdAndNotDelete(userService.getCurrentUser());
+    public SuccessResponse<List<Address>> getUserAddress() {
+        return SuccessResponse.create(addressService.findAllByUserIdAndNotDelete(userService.getCurrentUser()));
     }
 
     @GetMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<Address> getUserAddressById(@PathVariable Long addressId) {
+    public SuccessResponse<Address> getUserAddressById(@PathVariable Long addressId) {
         return addressService.findById(addressId)
-                .map(address -> ResponseEntity.ok().body(address))
-                .orElse(ResponseEntity.notFound().build());
+                .map(SuccessResponse::create)
+                .orElseThrow(NotFoundResourceException::new);
     }
 
     @GetMapping("/address/default")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<Address> getUserDefaultAddress() {
+    public SuccessResponse<Address> getUserDefaultAddress() {
         return addressService.findAddressByUserDefault(userService.getCurrentUser())
-                .map(address -> ResponseEntity.ok().body(address))
-                .orElse(ResponseEntity.notFound().build());
+                .map(SuccessResponse::create)
+                .orElseThrow(NotFoundResourceException::new);
     }
 
     @PostMapping("/address")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> createUserAddress(String name,
-                                                         String phone,
-                                                         String address,
-                                                         Boolean isDefault) {
+    public SuccessResponse<Object> createUserAddress(String name,
+                                                     String phone,
+                                                     String address,
+                                                     Boolean isDefault) {
         User user = userService.getCurrentUser();
         Address add = new Address();
         add.setUserId(user);
         saveAddress(name, phone, address, isDefault, user, add);
 
-        return ResponseEntity.ok()
-                .body(new ResponseMsg(HttpStatus.OK, "创建地址成功！"));
+        return SuccessResponse.create("创建地址成功！");
     }
 
     @PutMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> updateUserAddress(@PathVariable Long addressId,
-                                                         String name,
-                                                         String phone,
-                                                         String address,
-                                                         Boolean isDefault) {
+    public SuccessResponse<Object> updateUserAddress(@PathVariable Long addressId,
+                                                     String name,
+                                                     String phone,
+                                                     String address,
+                                                     Boolean isDefault) {
         User user = userService.getCurrentUser();
         return addressService.findById(addressId).map(add -> {
             if (!user.getId().equals(add.getUserId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ResponseMsg(HttpStatus.FORBIDDEN, "修改地址失败！"));
+                throw new AccessDeniedException("修改地址失败！");
             } else {
                 saveAddress(name, phone, address, isDefault, user, add);
-                return ResponseEntity.ok()
-                        .body(new ResponseMsg(HttpStatus.OK, "修改地址成功！"));
+                return SuccessResponse.create("修改地址成功！");
             }
-        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-           .body(new ResponseMsg(HttpStatus.NOT_FOUND, "地址不存在，修改地址失败！")));
+        }).orElseThrow(() -> new NotFoundResourceException("地址不存在，修改地址失败！"));
     }
 
     private void saveAddress(String name,
@@ -450,40 +436,36 @@ public class UserController {
 
     @DeleteMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> deleteUserAddress(@PathVariable Long addressId) {
+    public SuccessResponse<Object> deleteUserAddress(@PathVariable Long addressId) {
         User user = userService.getCurrentUser();
         return addressService.findById(addressId)
                 .map(address -> {
                     if (!user.getId().equals(address.getUserId())) {
-                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                                .body(new ResponseMsg(HttpStatus.FORBIDDEN, "删除地址失败！"));
+                        throw new AccessDeniedException("删除地址失败！");
                     } else {
                         address.setDefault(false);
                         address.setDelete(true);
                         addressService.save(address);
-                        return ResponseEntity.ok()
-                                .body(new ResponseMsg(HttpStatus.OK, "删除地址成功！"));
+                        return SuccessResponse.create("删除地址成功！");
                     }
-                }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ResponseMsg(HttpStatus.NOT_FOUND, "地址不存在，删除地址失败！")));
+                }).orElseThrow(() -> new NotFoundResourceException("地址不存在，删除地址失败！"));
     }
 
     @GetMapping("/cart")
     @PreAuthorize("hasRole('NORMAL')")
-    public List<Cart> getUserCart() {
-        return cartService.findCartByUserId(userService.getCurrentUser());
+    public SuccessResponse<List<Cart>> getUserCart() {
+        return SuccessResponse.create(cartService.findCartByUserId(userService.getCurrentUser()));
     }
 
     @PostMapping("/cart")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> addUserCart(Long productId,
-                                                   Integer quantity,
-                                                   Boolean checked) {
+    public SuccessResponse<Object> addUserCart(Long productId,
+                                               Integer quantity,
+                                               Boolean checked) {
         User user = userService.getCurrentUser();
         return productService.findById(productId).map(product -> {
             if (!product.getStatus()) {
-                return ResponseEntity.badRequest()
-                        .body(new ResponseMsg(HttpStatus.BAD_REQUEST, "商品已下架！"));
+                throw new BadRequestException("商品已下架！");
             }
             Cart cart = new Cart();
             cart.setProductId(product);
@@ -491,19 +473,17 @@ public class UserController {
             cart.setUserId(user);
             cart.setChecked(checked);
             cartService.save(cart);
-            return ResponseEntity.ok()
-                    .body(new ResponseMsg(HttpStatus.OK, "添加到购物车成功！"));
-        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMsg(HttpStatus.NOT_FOUND, "未找到该商品！")));
+            return SuccessResponse.create("添加到购物车成功！");
+        }).orElseThrow(() -> new NotFoundResourceException("未找到该商品！"));
 
     }
 
     @PutMapping("/cart/{cartId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public ResponseEntity<ResponseMsg> updateUserCart(@PathVariable Long cartId,
-                                                      Integer quantity,
-                                                      Boolean checked,
-                                                      Boolean isDelete) {
+    public SuccessResponse<Object> updateUserCart(@PathVariable Long cartId,
+                                                  Integer quantity,
+                                                  Boolean checked,
+                                                  Boolean isDelete) {
         User user = userService.getCurrentUser();
         return cartService.findById(cartId).map(cart -> {
             if (cart.getUserId().getId().equals(user.getId())) {
@@ -517,12 +497,9 @@ public class UserController {
                     cart.setChecked(checked);
                     cartService.save(cart);
                 }
-                return ResponseEntity.ok()
-                        .body(new ResponseMsg(HttpStatus.OK, msg));
+                return SuccessResponse.create(msg);
             }
-            return ResponseEntity.badRequest()
-                    .body(new ResponseMsg(HttpStatus.BAD_REQUEST, "更新购物车失败！"));
-        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMsg(HttpStatus.NOT_FOUND, "更新购物车失败！")));
+            throw new BadRequestException("更新购物车失败！");
+        }).orElseThrow(() -> new NotFoundResourceException("更新购物车失败！"));
     }
 }

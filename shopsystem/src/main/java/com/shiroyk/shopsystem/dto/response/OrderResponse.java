@@ -3,7 +3,7 @@
  * Created by shiroyk, https://github.com/shiroyk
  */
 
-package com.shiroyk.shopsystem.entity.getEntity;
+package com.shiroyk.shopsystem.dto.response;
 
 import com.shiroyk.shopsystem.constant.OrderStatus;
 import com.shiroyk.shopsystem.entity.OrderTotal;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class OrderMsg {
+public class OrderResponse {
     private Long id;
     private UserLite user;
     private AddressLite address;
@@ -25,7 +25,7 @@ public class OrderMsg {
     private String logistics;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private List<OrderMsgDetail> details;
+    private List<OrderDetailResponse> details;
 
     public Long getId() {
         return id;
@@ -123,15 +123,15 @@ public class OrderMsg {
         this.updateTime = updateTime;
     }
 
-    public List<OrderMsgDetail> getDetails() {
+    public List<OrderDetailResponse> getDetails() {
         return details;
     }
 
-    public void setDetails(List<OrderMsgDetail> details) {
+    public void setDetails(List<OrderDetailResponse> details) {
         this.details = details;
     }
 
-    public OrderMsg(OrderTotal orderTotal, List<OrderMsgDetail> detailList) {
+    public OrderResponse(OrderTotal orderTotal, List<OrderDetailResponse> detailList) {
         this.id = orderTotal.getId();
         this.user = orderTotal.getUserId();
         this.address = new AddressLite(orderTotal.getAddressId());
