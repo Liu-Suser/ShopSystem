@@ -80,6 +80,10 @@ public class User implements Serializable {
         return userpoint;
     }
 
+    public void inUserpoint(Integer userpoint) {
+        this.userpoint += userpoint;
+    }
+
     public void setUserpoint(Integer userpoint) {
         this.userpoint = userpoint;
     }
