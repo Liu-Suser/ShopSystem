@@ -68,10 +68,10 @@ export default {
         .then((res) => {
           if (res.status == 200) {
             this.$nextTick(function () {
-              this.category = res.data[0].categoryId.name
+              this.category = res.data.data[0].categoryId.name
             })
-            for (let i = 0, len = res.data.length; i < len; i += 3) {
-              this.product.push(res.data.slice(i, i + 3))
+            for (let i = 0, len = res.data.data.length; i < len; i += 3) {
+              this.product.push(res.data.data.slice(i, i + 3))
             }
             this.loading = false
           }

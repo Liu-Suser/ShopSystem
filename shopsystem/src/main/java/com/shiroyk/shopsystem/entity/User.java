@@ -28,7 +28,6 @@ public class User implements Serializable {
 
     private String nickname;
 
-    @Column(name = "userpoint")
     private Integer userpoint = 0;
 
     private String phone;
@@ -77,11 +76,11 @@ public class User implements Serializable {
         this.nickname = nickname;
     }
 
-    public Integer getUserPoint() {
+    public Integer getUserpoint() {
         return userpoint;
     }
 
-    public void setUserPoint(Integer userpoint) {
+    public void setUserpoint(Integer userpoint) {
         this.userpoint = userpoint;
     }
 
@@ -109,11 +108,11 @@ public class User implements Serializable {
         this.answer = answer;
     }
 
-    public UserRole getRole() {
+    public UserRole getRoleName() {
         return role;
     }
 
-    public Integer getRoleInt() {
+    public Integer getRole() {
         return role.getRole();
     }
 

@@ -6,7 +6,6 @@
 package com.shiroyk.shopsystem.dto.response;
 
 import com.shiroyk.shopsystem.constant.UserRole;
-import com.shiroyk.shopsystem.dto.response.UserLite;
 import com.shiroyk.shopsystem.entity.User;
 
 import java.time.LocalDateTime;
@@ -46,7 +45,7 @@ public class UserNormal extends UserLite {
     public UserNormal(User user) {
         super(user);
         this.phone = user.getPhone();
-        this.role = user.getRole();
+        this.role = user.getRoleName();
         this.createTime = user.getCreateTime();
     }
 }

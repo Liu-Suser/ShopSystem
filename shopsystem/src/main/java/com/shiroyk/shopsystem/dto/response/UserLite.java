@@ -41,11 +41,11 @@ public class UserLite {
         this.nickname = nickname;
     }
 
-    public Integer getUserPoint() {
+    public Integer getUserpoint() {
         return userpoint;
     }
 
-    public void setUserPoint(Integer userpoint) {
+    public void setUserpoint(Integer userpoint) {
         this.userpoint = userpoint;
     }
 
@@ -53,6 +53,6 @@ public class UserLite {
         this.id = user.getId();
         this.username = user.getUsername();
         this.nickname = user.getNickname();
-        this.userpoint = user.getUserPoint();
+        this.userpoint = user.getUserpoint();
     }
 }

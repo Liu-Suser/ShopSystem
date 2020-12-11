@@ -510,7 +510,7 @@ export default {
         .get('/admin/order/search?username=' + this.searchUser)
         .then(res => {
           if (res.status == 200) {
-            this.orderArray = res.data
+            this.orderArray = res.data.data
             this.orderLoading = false
           }
         })
@@ -523,11 +523,15 @@ export default {
       this.getAllOrder()
     },
     getOrderPageSize() {
+      let path = "/admin"
+      if (this.role == 3) {
+        path = "/user"
+      }
       this.$axios
-        .get('/admin/order/pageSize')
+        .get(path + '/order/pageSize')
         .then(res => {
           if (res.status == 200) {
-            this.pageSize = res.data
+            this.pageSize = res.data.data
           }
         })
         .catch(() => {})
@@ -539,7 +543,7 @@ export default {
         .get(path + '/order?page=' + this.currentPage)
         .then(res => {
           if (res.status == 200) {
-            this.orderArray = res.data
+            this.orderArray = res.data.data
             this.orderLoading = false
           }
         })

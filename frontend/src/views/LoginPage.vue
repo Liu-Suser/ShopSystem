@@ -188,9 +188,9 @@ export default {
           .then(res => {
             if (res.status == 200) {
               this.$message.success('登录成功！')
-              this.$store.commit('updateRole', res.data.role)
-              this.$store.commit('updateToken', res.data.token)
-              if ([0, 1, 2].indexOf(res.data.role) > -1) {
+              this.$store.commit('updateRole', res.data.data.role)
+              this.$store.commit('updateToken', res.data.data.token)
+              if ([0, 1, 2].indexOf(res.data.data.role) > -1) {
                 this.$router.push({ path: '/dashboard' })
               } else {
                 this.$router.push({ path: '/user' })

@@ -57,7 +57,7 @@ export default {
         .get('/category')
         .then(res => {
           if (res.status == 200) {
-            this.filterCategory(res.data)
+            this.filterCategory(res.data.data)
           }
         })
         .catch(() => {})

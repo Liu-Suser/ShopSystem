@@ -31,8 +31,8 @@ public class CategoryController {
     }
 
     @GetMapping()
-    public List<Category> getAllCategory() {
-        return categoryService.findAll();
+    public SuccessResponse<List<Category>> getAllCategory() {
+        return SuccessResponse.create(categoryService.findAll());
     }
     @GetMapping("/{categoryId}")
     public SuccessResponse<List<Category>> getCategoryByName(@PathVariable Long categoryId) {

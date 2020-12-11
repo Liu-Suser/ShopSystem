@@ -281,7 +281,7 @@ public class UserController {
                         statisticSender.sendMessage(StatisticEnum.CompleteOrder, 5000);
 
                         //增加用户积分, 计算方式为价格的1/100
-                        user.setUserPoint(orderTotal.getPrice().intValue() / 100);
+                        user.setUserpoint(orderTotal.getPrice().intValue() / 100);
                         userService.save(user);
 
                         successMsg = "完成订单成功！";

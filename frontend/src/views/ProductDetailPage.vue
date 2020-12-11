@@ -126,7 +126,7 @@ export default {
       this.$axios
         .get('/product/' + this.$route.query.id)
         .then((res) => {
-          this.product = res.data
+          this.product = res.data.data
         })
         .catch(() => {
           this.$message.error('加载失败，请稍后重试！')
@@ -160,8 +160,8 @@ export default {
       this.$axios
         .get('/product/' + this.$route.query.id + '/comment')
         .then((res) => {
-          for (let i = 0, len = res.data.length; i < len; i += 3) {
-            this.commentArray.push(res.data.slice(i, i + 3))
+          for (let i = 0, len = res.data.data.length; i < len; i += 3) {
+            this.commentArray.push(res.data.data.slice(i, i + 3))
           }
         })
         .catch(() => {

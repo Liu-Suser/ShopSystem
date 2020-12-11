@@ -159,7 +159,7 @@ public class AdminController {
         User user = userService.getCurrentUser();
         List<OrderResponse> msgList = null;
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRole()) {
+        switch (user.getRoleName()) {
             case Admin:
             case Service:
                 msgList = orderTotalService.findAllOrder(pageable);
@@ -174,7 +174,7 @@ public class AdminController {
     @GetMapping("/order/pageSize")
     public SuccessResponse<Long> getOrderPageSize() {
         Long size = 0L;
-        switch (userService.getCurrentUser().getRole()) {
+        switch (userService.getCurrentUser().getRoleName()) {
             case Admin:
             case Service:
                 size = orderTotalService.getOrderCount();
@@ -195,7 +195,7 @@ public class AdminController {
         User normalUser = userService.findUserByUsername(username);
         List<OrderResponse> msgList = null;
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRole()) {
+        switch (user.getRoleName()) {
             case Admin:
             case Service:
                 msgList = orderTotalService.searchUserOrder(pageable, normalUser);
@@ -213,7 +213,7 @@ public class AdminController {
         User user = userService.getCurrentUser();
         return orderTotalService.findOrderResponseById(orderId)
                 .map(orderResponse -> {
-                    if (UserRole.Warehouse == user.getRole()) {
+                    if (UserRole.Warehouse == user.getRoleName()) {
                         if (OrderStatus.Payed.equals(orderResponse.getStatus())
                             || OrderStatus.Shipped.equals(orderResponse.getStatus())) {
                             return SuccessResponse.create(orderResponse);
@@ -243,7 +243,7 @@ public class AdminController {
                 .map(orderTotal -> {
                     String successMsg = null;
                     String failMsg = null;
-                    switch (user.getRole()) {
+                    switch (user.getRoleName()) {
                         case Admin:
                             orderTotal.setPrice(price);
                             orderTotal.setStatus(status);

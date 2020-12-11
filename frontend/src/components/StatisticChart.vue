@@ -92,7 +92,7 @@ export default {
         .get('/admin/statistic')
         .then(res => {
           if (res.status == 200) {
-            res.data.forEach(day => {
+            res.data.data.forEach(day => {
               this.option.xAxis[0].data.push(day.timestamp)
               this.option.series[0].data.push(day.newOrder)
               this.option.series[1].data.push(day.cancelOrder)

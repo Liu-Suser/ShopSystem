@@ -65,8 +65,8 @@ export default {
         .get('/product/search?product=' + this.$route.query.name)
         .then((res) => {
           if (res.status == 200) {
-            for (let i = 0, len = res.data.length; i < len; i += 3) {
-              this.productArray.push(res.data.slice(i, i + 3))
+            for (let i = 0, len = res.data.data.length; i < len; i += 3) {
+              this.productArray.push(res.data.data.slice(i, i + 3))
             }
             this.loading = false
           }

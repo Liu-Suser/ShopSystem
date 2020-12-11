@@ -86,7 +86,7 @@ export default {
         .get('/product/pageSize')
         .then((res) => {
           if (res.status == 200) {
-            this.pageSize = res.data
+            this.pageSize = res.data.data
           }
         })
         .catch(() => {})
@@ -97,8 +97,8 @@ export default {
         .get('/product?page=' + this.currentPage)
         .then((res) => {
           if (res.status == 200) {
-            for (let i = 0, len = res.data.length; i < len; i += 3) {
-              this.product.push(res.data.slice(i, i + 3))
+            for (let i = 0, len = res.data.data.length; i < len; i += 3) {
+              this.product.push(res.data.data.slice(i, i + 3))
             }
             this.productLoading = false
           }

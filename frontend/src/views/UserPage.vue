@@ -1017,7 +1017,7 @@ export default {
         .get('/user/info')
         .then(res => {
           if (res.status == 200) {
-            this.userInfo = res.data
+            this.userInfo = res.data.data
             if (this.userInfo.role == 3) {
               this.getUserAddres()
               this.editUserInfo = this.userInfo
@@ -1041,7 +1041,7 @@ export default {
         .get('/admin/user')
         .then(res => {
           if (res.status == 200) {
-            this.userArray = res.data
+            this.userArray = res.data.data
           }
         })
         .catch(() => {})
@@ -1051,7 +1051,7 @@ export default {
         .get('/admin/user/search?username=' + this.searchUser)
         .then(res => {
           if (res.status == 200) {
-            this.userArray = res.data
+            this.userArray = res.data.data
           }
         })
         .catch(() => {})
@@ -1073,7 +1073,7 @@ export default {
       let url = '/admin/user/'
       if (this.editUser.id) {
         method = 'put'
-        url += this.editUser.username
+        url += this.editUser.id
       }
       this.$axios({
         method: method,
@@ -1088,20 +1088,6 @@ export default {
         })
         .catch(() => {
           this.$message.error('保存失败！')
-        })
-    },
-    updateUser() {
-      const params = this.getPostUserParams()
-      this.$axios
-        .put('/admin/user/' + this.editUser.username, params)
-        .then(res => {
-          if (res.status == 200) {
-            this.$message.success(res.data.msg)
-            this.searchUsername()
-          }
-        })
-        .catch(() => {
-          this.$message.error('修改失败！')
         })
     },
     updateUserInfo() {
@@ -1125,7 +1111,7 @@ export default {
     },
     deleteUser() {
       this.$axios
-        .delete('/admin/user/' + this.editUser.username)
+        .delete('/admin/user/' + this.editUser.id)
         .then(res => {
           if (res.status == 200) {
             this.searchUsername()
@@ -1142,7 +1128,7 @@ export default {
         .then(res => {
           if (res.status == 200) {
             this.categoryArray = []
-            this.filterCategory(res.data)
+            this.filterCategory(res.data.data)
           }
         })
         .catch(() => {
@@ -1171,14 +1157,13 @@ export default {
           return child.parentId == item.id
         })
       })
-      console.log(this.categoryArray)
     },
     getUserAddres() {
       this.$axios
         .get('/user/address')
         .then(res => {
           if (res.status == 200) {
-            this.addressArray = res.data
+            this.addressArray = res.data.data
             this.address = this.addressArray.filter(function(add) {
               return add.default == true
             })[0]
@@ -1191,7 +1176,7 @@ export default {
         .get('/product?page=' + n)
         .then(res => {
           if (res.status == 200) {
-            this.productArray = res.data
+            this.productArray = res.data.data
           }
         })
         .catch(() => {
@@ -1206,7 +1191,7 @@ export default {
         .get('/product/search?' + params)
         .then(res => {
           if (res.status == 200) {
-            this.productArray = res.data
+            this.productArray = res.data.data
           }
         })
         .catch(() => {

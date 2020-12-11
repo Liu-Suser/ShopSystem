@@ -155,7 +155,7 @@ export default {
         .get('/user/cart')
         .then(res => {
           if (res.status == 200) {
-            this.cartArray = res.data
+            this.cartArray = res.data.data
           }
         })
         .catch(err => {

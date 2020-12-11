@@ -106,7 +106,7 @@ export default {
         .get('/user/address')
         .then(res => {
           if (res.status == 200) {
-            this.addressArray = res.data
+            this.addressArray = res.data.data
             this.address = this.addressArray.filter(function(add) {
               return add.default == true
             })[0]
