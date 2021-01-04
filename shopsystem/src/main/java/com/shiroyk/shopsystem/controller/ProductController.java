@@ -8,7 +8,7 @@ package com.shiroyk.shopsystem.controller;
 import com.shiroyk.shopsystem.entity.Comment;
 import com.shiroyk.shopsystem.entity.Image;
 import com.shiroyk.shopsystem.entity.Product;
-import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.dto.response.CommonResponse;
 import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.AdvertService;
 import com.shiroyk.shopsystem.service.CommentService;
@@ -49,36 +49,36 @@ public class ProductController {
     }
 
     @GetMapping("/pageSize")
-    public SuccessResponse<Long> getPageSize() {
-        return SuccessResponse.create(productService.getProductCount());
+    public CommonResponse<Long> getPageSize() {
+        return CommonResponse.create(productService.getProductCount());
     }
 
     @GetMapping()
-    public SuccessResponse<List<Product>> getProductList(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public CommonResponse<List<Product>> getProductList(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
         Pageable pageable = PageRequest.of(page, PAGESIZE);
-        return SuccessResponse.create(productService.findAll(pageable));
+        return CommonResponse.create(productService.findAll(pageable));
     }
 
     @GetMapping("/banner")
-    public SuccessResponse<Image[]> getBanner() {
-        return SuccessResponse.create(advertService.getAdvert().getImage());
+    public CommonResponse<Image[]> getBanner() {
+        return CommonResponse.create(advertService.getAdvert().getImage());
     }
 
     @GetMapping("/search")
-    public SuccessResponse<List<Product>> searchProduct(@RequestParam("product") String product) {
-        return SuccessResponse.create(productService.searchProducts(product));
+    public CommonResponse<List<Product>> searchProduct(@RequestParam("product") String product) {
+        return CommonResponse.create(productService.searchProducts(product));
     }
 
     @GetMapping("/{productId}")
-    public SuccessResponse<Product> getProduct(@PathVariable Long productId) {
+    public CommonResponse<Product> getProduct(@PathVariable Long productId) {
         return productService.findById(productId)
-                .map(SuccessResponse::create)
+                .map(CommonResponse::create)
                 .orElseThrow(NotFoundResourceException::new);
     }
 
     @GetMapping("/{productId}/comment")
-    public SuccessResponse<List<Comment>> getProductComment(@PathVariable Long productId) {
-        return SuccessResponse.create(commentService.findCommentByProductId(productId));
+    public CommonResponse<List<Comment>> getProductComment(@PathVariable Long productId) {
+        return CommonResponse.create(commentService.findCommentByProductId(productId));
     }
 
     @GetMapping("/image/{fileName:.+}")

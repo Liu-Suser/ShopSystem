@@ -5,7 +5,7 @@
 
 package com.shiroyk.shopsystem.controller;
 
-import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.dto.response.CommonResponse;
 import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.CategoryService;
 import com.shiroyk.shopsystem.entity.Category;
@@ -31,19 +31,19 @@ public class CategoryController {
     }
 
     @GetMapping()
-    public SuccessResponse<List<Category>> getAllCategory() {
-        return SuccessResponse.create(categoryService.findAll());
+    public CommonResponse<List<Category>> getAllCategory() {
+        return CommonResponse.create(categoryService.findAll());
     }
     @GetMapping("/{categoryId}")
-    public SuccessResponse<List<Category>> getCategoryByName(@PathVariable Long categoryId) {
-        return SuccessResponse.create(categoryService.findCategoriesByPid(categoryId));
+    public CommonResponse<List<Category>> getCategoryByName(@PathVariable Long categoryId) {
+        return CommonResponse.create(categoryService.findCategoriesByPid(categoryId));
     }
 
     @GetMapping("/{categoryId}/product")
-    public SuccessResponse<List<Product>> getProductByCategory(@PathVariable Long categoryId, @RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public CommonResponse<List<Product>> getProductByCategory(@PathVariable Long categoryId, @RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
         return categoryService.findById(categoryId).map(category -> {
             Pageable pageable = PageRequest.of(page,12);
-            return SuccessResponse.create(productService.findAllByCategoryId(category, pageable));
+            return CommonResponse.create(productService.findAllByCategoryId(category, pageable));
         }).orElseThrow(NotFoundResourceException::new);
     }
 

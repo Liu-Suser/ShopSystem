@@ -8,7 +8,7 @@ package com.shiroyk.shopsystem.controller;
 import com.shiroyk.shopsystem.entity.JwtUser;
 import com.shiroyk.shopsystem.entity.User;
 import com.shiroyk.shopsystem.dto.response.LoginResponse;
-import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.dto.response.CommonResponse;
 import com.shiroyk.shopsystem.exception.BadRequestException;
 import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.UserService;
@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public SuccessResponse<Object> login(String username,
-                                         String password) {
+    public CommonResponse<Object> login(String username,
+                                        String password) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 username, password));
 
@@ -44,14 +44,14 @@ public class AuthController {
         String token = JwtTokenUtils.createToken(authentication.getName());
         JwtUser user = (JwtUser) authentication.getPrincipal();
 
-        return SuccessResponse.create("Success", new LoginResponse(user, token));
+        return CommonResponse.create("Success", new LoginResponse(user, token));
     }
 
     @PostMapping("/signup")
-    public SuccessResponse<Object> signUp(String username,
-                                          String password,
-                                          String nickname,
-                                          String phone) {
+    public CommonResponse<Object> signUp(String username,
+                                         String password,
+                                         String nickname,
+                                         String phone) {
         if (userService.findUserByUsername(username) != null) {
             throw new NotFoundResourceException( "用户已存在！");
         } else {
@@ -62,30 +62,30 @@ public class AuthController {
             user.setPhone(phone);
             user.setNickname(nickname);
             userService.save(user);
-            return SuccessResponse.create("注册成功！");
+            return CommonResponse.create("注册成功！");
         }
     }
 
     @GetMapping("/question")
-    public SuccessResponse<String> getForgetQuestion(@RequestParam("username") String username) {
+    public CommonResponse<String> getForgetQuestion(@RequestParam("username") String username) {
         //获取用户的安全问题
         Optional<String> question = userService.getAnswerByUsername(username);
         return question
-                .map(s -> SuccessResponse.create("Success", s))
+                .map(s -> CommonResponse.create("Success", s))
                 .orElseThrow(() -> new NotFoundResourceException("用户不存在！"));
     }
 
     @PutMapping("/forget")
-    public SuccessResponse<Object> forgetPassword(String username,
-                                                  String answer,
-                                                  String newPassword) {
+    public CommonResponse<Object> forgetPassword(String username,
+                                                 String answer,
+                                                 String newPassword) {
         //对比安全问题答案，相同则修改密码
         User user = userService.findUserByUsername(username);
         if (user.getAnswer().equals(answer)) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(newPassword));
             userService.save(user);
-            return SuccessResponse.create("修改密码成功！");
+            return CommonResponse.create("修改密码成功！");
         } else {
             throw new BadRequestException("修改密码失败！");
         }

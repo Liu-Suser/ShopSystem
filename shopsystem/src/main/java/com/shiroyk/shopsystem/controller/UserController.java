@@ -12,7 +12,7 @@ import com.shiroyk.shopsystem.constant.OrderStatus;
 import com.shiroyk.shopsystem.constant.StatisticEnum;
 import com.shiroyk.shopsystem.entity.*;
 import com.shiroyk.shopsystem.dto.response.OrderResponse;
-import com.shiroyk.shopsystem.dto.response.SuccessResponse;
+import com.shiroyk.shopsystem.dto.response.CommonResponse;
 import com.shiroyk.shopsystem.dto.response.UserNormal;
 import com.shiroyk.shopsystem.dto.request.NewOrder;
 import com.shiroyk.shopsystem.exception.BadRequestException;
@@ -72,33 +72,33 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public SuccessResponse<Object> updatePassword(String newPassword) {
+    public CommonResponse<Object> updatePassword(String newPassword) {
         //角色修改自己的密码
         User user = userService.getCurrentUser();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassword(encoder.encode(newPassword));
         userService.save(user);
-        return SuccessResponse.create("修改密码成功！");
+        return CommonResponse.create("修改密码成功！");
     }
 
     @GetMapping("/{userId}")
-    public SuccessResponse<User> getUserInfo(@PathVariable Long userId) {
+    public CommonResponse<User> getUserInfo(@PathVariable Long userId) {
         return userService.findById(userId)
-                .map(SuccessResponse::create)
+                .map(CommonResponse::create)
                 .orElseThrow(() -> new NotFoundResourceException("未找到该用户！"));
     }
 
     @GetMapping("/info")
-    public SuccessResponse<UserNormal> getInfo() {
-        return SuccessResponse.create(new UserNormal(userService.getCurrentUser()));
+    public CommonResponse<UserNormal> getInfo() {
+        return CommonResponse.create(new UserNormal(userService.getCurrentUser()));
     }
 
     @PutMapping("/info")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> updateInfo(String nickname,
-                                              String phone,
-                                              String question,
-                                              String answer) {
+    public CommonResponse<Object> updateInfo(String nickname,
+                                             String phone,
+                                             String question,
+                                             String answer) {
         User user = userService.getCurrentUser();
 
         if (!StringUtils.isEmpty(nickname)) {
@@ -114,34 +114,34 @@ public class UserController {
             user.setAnswer(answer);
         }
         userService.save(user);
-        return SuccessResponse.create("修改信息成功！");
+        return CommonResponse.create("修改信息成功！");
     }
 
     @GetMapping("/order/pageSize")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Long> getOrderPageSize() {
+    public CommonResponse<Long> getOrderPageSize() {
         User user = userService.getCurrentUser();
-        return SuccessResponse.create(orderTotalService.getOrderCountByUser(user));
+        return CommonResponse.create(orderTotalService.getOrderCountByUser(user));
     }
 
     @GetMapping("/order")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<List<OrderResponse>> getUserOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public CommonResponse<List<OrderResponse>> getUserOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
         //普通用户获得自己的所有订单
         User user = userService.getCurrentUser();
         Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by(Sort.Direction.DESC, "createTime"));
-        return SuccessResponse.create(orderTotalService.searchUserOrderAndDeleteFalse(pageable, user));
+        return CommonResponse.create(orderTotalService.searchUserOrderAndDeleteFalse(pageable, user));
     }
 
     @GetMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<OrderResponse> getOrder(@PathVariable Long orderId) {
+    public CommonResponse<OrderResponse> getOrder(@PathVariable Long orderId) {
         //普通用户获得自己的订单详情
         User user = userService.getCurrentUser();
         return orderTotalService.findOrderResponseById(orderId)
         .map(orderResponse -> {
             if (user.getId().equals(orderResponse.getUser().getId())) {
-                return SuccessResponse.create(orderResponse);
+                return CommonResponse.create(orderResponse);
             }
             throw new NotFoundResourceException();
         }).orElseThrow(NotFoundResourceException::new);
@@ -149,7 +149,7 @@ public class UserController {
 
     @PostMapping("/order")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> createOrder(@RequestBody NewOrder newOrder) {
+    public CommonResponse<Object> createOrder(@RequestBody NewOrder newOrder) {
         //用户新建订单
         User user = userService.getCurrentUser();
         Optional<Address> address = addressService.findById(newOrder.getAid());
@@ -213,14 +213,14 @@ public class UserController {
         //统计新订单
         statisticSender.sendMessage(StatisticEnum.newOrder, 5000);
 
-        return SuccessResponse.create("创建订单成功！");
+        return CommonResponse.create("创建订单成功！");
     }
 
     @PutMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> updateOrder(@PathVariable Long orderId,
-                                               OrderStatus status,
-                                               String payMethod) {
+    public CommonResponse<Object> updateOrder(@PathVariable Long orderId,
+                                              OrderStatus status,
+                                              String payMethod) {
         User user = userService.getCurrentUser();
         Optional<OrderTotal> totalOptional = orderTotalService.findById(orderId);
         if (!totalOptional.isPresent()) {
@@ -312,26 +312,26 @@ public class UserController {
         if (successMsg == null) {
             successMsg = "更新订单成功！";
         }
-        return SuccessResponse.create(successMsg);
+        return CommonResponse.create(successMsg);
     }
 
     @DeleteMapping("/order/{orderId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> deleteOrder(@PathVariable Long orderId) {
+    public CommonResponse<Object> deleteOrder(@PathVariable Long orderId) {
         //软删除用户订单
         User user = userService.getCurrentUser();
         return orderTotalService.findById(orderId).map(total -> {
             total.setDelete(true);
             orderTotalService.save(total);
-            return SuccessResponse.create("删除成功！");
+            return CommonResponse.create("删除成功！");
         }).orElseThrow(() -> new NotFoundResourceException("未找到该订单！"));
     }
 
     @PostMapping("/order/{orderDetailId}/comment")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> commentOrder(@PathVariable Long orderDetailId,
-                                                Integer rate,
-                                                String comment) {
+    public CommonResponse<Object> commentOrder(@PathVariable Long orderDetailId,
+                                               Integer rate,
+                                               String comment) {
         //用户创建评论
         User user = userService.getCurrentUser();
         return orderDetailService.findById(orderDetailId).map(orderDetail -> {
@@ -349,7 +349,7 @@ public class UserController {
 
                 orderDetail.setCommentId(cmt);
                 orderDetailService.save(orderDetail);
-                return SuccessResponse.create("评价成功！");
+                return CommonResponse.create("评价成功！");
             } else {
                 errorMsg = "订单未完成，评价失败！";
             }
@@ -359,54 +359,54 @@ public class UserController {
 
     @GetMapping("/address")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<List<Address>> getUserAddress() {
-        return SuccessResponse.create(addressService.findAllByUserIdAndNotDelete(userService.getCurrentUser()));
+    public CommonResponse<List<Address>> getUserAddress() {
+        return CommonResponse.create(addressService.findAllByUserIdAndNotDelete(userService.getCurrentUser()));
     }
 
     @GetMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Address> getUserAddressById(@PathVariable Long addressId) {
+    public CommonResponse<Address> getUserAddressById(@PathVariable Long addressId) {
         return addressService.findById(addressId)
-                .map(SuccessResponse::create)
+                .map(CommonResponse::create)
                 .orElseThrow(NotFoundResourceException::new);
     }
 
     @GetMapping("/address/default")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Address> getUserDefaultAddress() {
+    public CommonResponse<Address> getUserDefaultAddress() {
         return addressService.findAddressByUserDefault(userService.getCurrentUser())
-                .map(SuccessResponse::create)
+                .map(CommonResponse::create)
                 .orElseThrow(NotFoundResourceException::new);
     }
 
     @PostMapping("/address")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> createUserAddress(String name,
-                                                     String phone,
-                                                     String address,
-                                                     Boolean isDefault) {
+    public CommonResponse<Object> createUserAddress(String name,
+                                                    String phone,
+                                                    String address,
+                                                    Boolean isDefault) {
         User user = userService.getCurrentUser();
         Address add = new Address();
         add.setUserId(user);
         saveAddress(name, phone, address, isDefault, user, add);
 
-        return SuccessResponse.create("创建地址成功！");
+        return CommonResponse.create("创建地址成功！");
     }
 
     @PutMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> updateUserAddress(@PathVariable Long addressId,
-                                                     String name,
-                                                     String phone,
-                                                     String address,
-                                                     Boolean isDefault) {
+    public CommonResponse<Object> updateUserAddress(@PathVariable Long addressId,
+                                                    String name,
+                                                    String phone,
+                                                    String address,
+                                                    Boolean isDefault) {
         User user = userService.getCurrentUser();
         return addressService.findById(addressId).map(add -> {
             if (!user.getId().equals(add.getUserId())) {
                 throw new AccessDeniedException("修改地址失败！");
             } else {
                 saveAddress(name, phone, address, isDefault, user, add);
-                return SuccessResponse.create("修改地址成功！");
+                return CommonResponse.create("修改地址成功！");
             }
         }).orElseThrow(() -> new NotFoundResourceException("地址不存在，修改地址失败！"));
     }
@@ -436,7 +436,7 @@ public class UserController {
 
     @DeleteMapping("/address/{addressId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> deleteUserAddress(@PathVariable Long addressId) {
+    public CommonResponse<Object> deleteUserAddress(@PathVariable Long addressId) {
         User user = userService.getCurrentUser();
         return addressService.findById(addressId)
                 .map(address -> {
@@ -446,22 +446,22 @@ public class UserController {
                         address.setDefault(false);
                         address.setDelete(true);
                         addressService.save(address);
-                        return SuccessResponse.create("删除地址成功！");
+                        return CommonResponse.create("删除地址成功！");
                     }
                 }).orElseThrow(() -> new NotFoundResourceException("地址不存在，删除地址失败！"));
     }
 
     @GetMapping("/cart")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<List<Cart>> getUserCart() {
-        return SuccessResponse.create(cartService.findCartByUserId(userService.getCurrentUser()));
+    public CommonResponse<List<Cart>> getUserCart() {
+        return CommonResponse.create(cartService.findCartByUserId(userService.getCurrentUser()));
     }
 
     @PostMapping("/cart")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> addUserCart(Long productId,
-                                               Integer quantity,
-                                               Boolean checked) {
+    public CommonResponse<Object> addUserCart(Long productId,
+                                              Integer quantity,
+                                              Boolean checked) {
         User user = userService.getCurrentUser();
         return productService.findById(productId).map(product -> {
             if (!product.getStatus()) {
@@ -473,17 +473,17 @@ public class UserController {
             cart.setUserId(user);
             cart.setChecked(checked);
             cartService.save(cart);
-            return SuccessResponse.create("添加到购物车成功！");
+            return CommonResponse.create("添加到购物车成功！");
         }).orElseThrow(() -> new NotFoundResourceException("未找到该商品！"));
 
     }
 
     @PutMapping("/cart/{cartId}")
     @PreAuthorize("hasRole('NORMAL')")
-    public SuccessResponse<Object> updateUserCart(@PathVariable Long cartId,
-                                                  Integer quantity,
-                                                  Boolean checked,
-                                                  Boolean isDelete) {
+    public CommonResponse<Object> updateUserCart(@PathVariable Long cartId,
+                                                 Integer quantity,
+                                                 Boolean checked,
+                                                 Boolean isDelete) {
         User user = userService.getCurrentUser();
         return cartService.findById(cartId).map(cart -> {
             if (cart.getUserId().getId().equals(user.getId())) {
@@ -497,7 +497,7 @@ public class UserController {
                     cart.setChecked(checked);
                     cartService.save(cart);
                 }
-                return SuccessResponse.create(msg);
+                return CommonResponse.create(msg);
             }
             throw new BadRequestException("更新购物车失败！");
         }).orElseThrow(() -> new NotFoundResourceException("更新购物车失败！"));
