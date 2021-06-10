@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiroyk.shopsystem.mapper.CartMapper">
+    <insert id="save" parameterType="com.shiroyk.shopsystem.entity.Cart">
+        insert into cart (id, user_id, product_id, quantity, checked, create_time, update_time)
+        values (#{id}, #{userId}, #{productId},
+                #{quantity}, #{checked}, #{createTime},
+                #{updateTime})
+        on duplicate key update user_id = #{userId}, product_id =  #{productId}, quantity = #{quantity},
+                                checked = #{checked}, create_time = #{createTime}, update_time = #{updateTime}
+    </insert>
+    <delete id="delete" parameterType="java.lang.Long">
+        delete from cart where id = #{id}
+    </delete>
+    <select id="findCartsByUserId" resultType="com.shiroyk.shopsystem.entity.Cart" parameterType="long">
+        select * from cart where user_id = #{uid}
+    </select>
+    <select id="findById" resultType="com.shiroyk.shopsystem.entity.Cart" parameterType="java.lang.Long">
+        select * from cart where id = #{id}
+    </select>
+</mapper>

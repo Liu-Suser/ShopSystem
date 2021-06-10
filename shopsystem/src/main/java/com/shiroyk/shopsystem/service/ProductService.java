@@ -5,48 +5,29 @@
 
 package com.shiroyk.shopsystem.service;
 
-import com.shiroyk.shopsystem.entity.Category;
-import com.shiroyk.shopsystem.repository.ProductRepository;
 import com.shiroyk.shopsystem.entity.Product;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Service
-public class ProductService {
-    private final ProductRepository productRepository;
+public interface ProductService {
 
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+    void save(Product product);
 
-    public void save(Product product) {
-        productRepository.save(product);
-    }
+    void updateInventory(List<Product> product);
 
-    public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
-    }
+    Optional<Product> findById(Long id);
 
-    public Long getProductCount() {
-        return productRepository.count();
-    }
+    Long getProductCount();
 
-    public List<Product> findAll(Pageable pageable) {
-        return productRepository.findProductsByStatusIsTrue(pageable);
-    }
+    List<Product> findAll(int num, int size);
 
-    public List<Product> findAllByCategoryId(Category category, Pageable pageable) {
-        return productRepository.findAllByCategoryId(category, pageable);
-    }
+    Map<Long, Product> findProductInventoryMapByIdList(List<Long> idList);
 
-    public Optional<Product> findProductByName(String name) {
-        return productRepository.findProductByName(name);
-    }
+    List<Product> findAllByCategoryId(long categoryId, int num, int size);
 
-    public List<Product> searchProducts(String name) {
-        return productRepository.findProductsByStatusIsTrueAndSubtitleContains(name);
-    }
+    Optional<Product> findProductByName(String name);
+
+    List<Product> searchProducts(String name);
 }

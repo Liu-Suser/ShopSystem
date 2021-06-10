@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiroyk.shopsystem.mapper.AddressMapper">
+    <insert id="save" parameterType="com.shiroyk.shopsystem.entity.Address">
+        insert into address (id, user_id, name, phone, address, is_default, is_delete, create_time, update_time)
+        values (#{id}, #{userId}, #{name},
+                #{phone}, #{address}, #{isDefault},
+                #{isDelete}, #{createTime}, #{updateTime})
+        on duplicate key update user_id = #{id}, name =  #{userId}, phone = #{phone},
+                                address = #{address}, is_default = #{isDefault}, is_delete = #{isDelete},
+                                create_time = #{createTime}, update_time = #{updateTime}
+    </insert>
+    <select id="findAllByUserId" resultType="com.shiroyk.shopsystem.entity.Address" parameterType="long">
+        select * from address where user_id = #{uid}
+    </select>
+    <select id="findAllByUserIdAndIsDelete" resultType="com.shiroyk.shopsystem.entity.Address">
+        select * from address where user_id = #{uid} and is_delete = #{isDelete}
+    </select>
+    <select id="findAddressByUserIdAndIsDefault" resultType="com.shiroyk.shopsystem.entity.Address" parameterType="long">
+        select * from address where user_id = #{uid} and is_default is true
+    </select>
+    <select id="findById" resultType="com.shiroyk.shopsystem.entity.Address" parameterType="java.lang.Long">
+        select * from address where id = #{id}
+    </select>
+</mapper>

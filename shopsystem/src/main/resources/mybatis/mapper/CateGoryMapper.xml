@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiroyk.shopsystem.mapper.CategoryMapper">
+    <insert id="save" parameterType="com.shiroyk.shopsystem.entity.Category">
+        insert into category (id, name, status, parent_id, create_time, update_time)
+        values (#{id}, #{name}, #{status},
+                #{parentId}, #{createTime}, #{updateTime})
+        on duplicate key update name = #{name}, status =  #{status}, parent_id = #{parentId},
+                                create_time = #{createTime}, update_time = #{updateTime}
+    </insert>
+    <select id="findCategoriesByParentId" resultType="com.shiroyk.shopsystem.entity.Category" parameterType="long">
+        select * from category where parent_id = #{parentId}
+    </select>
+    <select id="findCategoryByName" resultType="com.shiroyk.shopsystem.entity.Category" parameterType="java.lang.String">
+        select * from category where name = #{name}
+    </select>
+    <select id="findById" resultType="com.shiroyk.shopsystem.entity.Category" parameterType="java.lang.Long">
+        select * from category where id = #{id}
+    </select>
+    <select id="findAll" resultType="com.shiroyk.shopsystem.entity.Category">
+        select * from category
+    </select>
+</mapper>

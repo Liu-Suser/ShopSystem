@@ -1,10 +1,7 @@
 # ShopSystem后端
 
 ## 使用
-首先安装`maven`
-- 打包
-- 编译Docker镜像
 ```
-mvn package
+mvn war
 docker build -t shopsystem:latest .
 ```

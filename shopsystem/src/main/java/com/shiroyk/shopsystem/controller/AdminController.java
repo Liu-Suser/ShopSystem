@@ -7,17 +7,12 @@ package com.shiroyk.shopsystem.controller;
 
 import com.shiroyk.shopsystem.constant.OrderStatus;
 import com.shiroyk.shopsystem.constant.UserRole;
+import com.shiroyk.shopsystem.dto.response.APIResponse;
 import com.shiroyk.shopsystem.entity.*;
-import com.shiroyk.shopsystem.dto.response.OrderResponse;
-import com.shiroyk.shopsystem.dto.response.CommonResponse;
 import com.shiroyk.shopsystem.exception.BadRequestException;
 import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -28,11 +23,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    Logger logger = LoggerFactory.getLogger(AdminController.class);
-    private static final Integer PAGESIZE = 5;
     private final UserService userService;
     private final OrderTotalService orderTotalService;
     private final OrderDetailService orderDetailService;
@@ -65,33 +59,33 @@ public class AdminController {
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<List<User>> getAllUser() {
-        return CommonResponse.create(userService.findAll());
+    public APIResponse<List<User>> getAllUser() {
+        return APIResponse.ok(userService.findAll());
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<User> getUserInfo(@PathVariable Long userId) {
+    public APIResponse<User> getUserInfo(@PathVariable Long userId) {
         return userService.findById(userId)
-                .map(CommonResponse::create)
+                .map(APIResponse::ok)
                 .orElseThrow(() -> new NotFoundResourceException("未找到该用户！"));
     }
 
     @GetMapping("/user/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<List<User>> searchUser(@RequestParam("username") String username) {
-        return CommonResponse.create(userService.searchUserByUsername(username));
+    public APIResponse<List<User>> searchUser(@RequestParam("username") String username) {
+        return APIResponse.ok(userService.searchUserByUsername(username));
     }
 
     @PostMapping("/user")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<Object> createUser(String username,
-                                             String password,
-                                             String nickname,
-                                             String phone,
-                                             String question,
-                                             String answer,
-                                             Integer role) {
+    public APIResponse<Object> createUser(String username,
+                                              String password,
+                                              String nickname,
+                                              String phone,
+                                              String question,
+                                              String answer,
+                                              Integer role) {
         //管理员创建用户
         User user = userService.findUserByUsername(username);
         if (user != null) {
@@ -110,13 +104,13 @@ public class AdminController {
 
     @PutMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<Object> updateUser(@PathVariable Long userId,
-                                             String nickname,
-                                             String password,
-                                             String phone,
-                                             String question,
-                                             String answer,
-                                             Integer role) {
+    public APIResponse<Object> updateUser(@PathVariable Long userId,
+                                              String nickname,
+                                              String password,
+                                              String phone,
+                                              String question,
+                                              String answer,
+                                              Integer role) {
         //管理员修改用户
         return userService.findById(userId).map(user -> {
             if (password != null) {
@@ -127,137 +121,147 @@ public class AdminController {
         }).orElseThrow(() -> new NotFoundResourceException("用户不存在！"));
     }
 
-    private CommonResponse<Object> saveUser(String nickname,
-                                            String phone,
-                                            String question,
-                                            String answer,
-                                            Integer role,
-                                            User user) {
+    private APIResponse<Object> saveUser(String nickname,
+                                             String phone,
+                                             String question,
+                                             String answer,
+                                             Integer role,
+                                             User user) {
         user.setNickname(nickname);
         user.setPhone(phone);
         user.setQuestion(question);
         user.setAnswer(answer);
         user.setRole(UserRole.values()[role]);
         userService.save(user);
-        return CommonResponse.create("保存用户成功！");
+        return APIResponse.ok("保存用户成功！");
     }
 
     @DeleteMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<Object> deleteUser(@PathVariable Long userId) {
+    public APIResponse<Object> deleteUser(@PathVariable Long userId) {
         //管理员删除用户
         return userService.findById(userId).map(user -> {
-            userService.delete(user);
-            return CommonResponse.create("删除用户成功！");
+            userService.delete(user.getId());
+            return APIResponse.ok("删除用户成功！");
         }).orElseThrow(() -> new NotFoundResourceException("未找到该用户！"));
     }
 
     @GetMapping("/order")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE','WAREHOUSE')")
-    public CommonResponse<List<OrderResponse>> getAllOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
+    public APIResponse<List<OrderTotal>> getAllOrder(@RequestParam(required = false, defaultValue = "0", value="p") Integer page,
+                                                     @RequestParam(required = false, defaultValue = "10", value="s") Integer size) {
         //管理员客服获得所有订单，仓库管理员获得已支付订单
-        User user = userService.getCurrentUser();
-        List<OrderResponse> msgList = null;
-        Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRoleName()) {
-            case Admin:
-            case Service:
-                msgList = orderTotalService.findAllOrder(pageable);
-                break;
-            case Warehouse:
-                msgList = orderTotalService.findOrdersWarehouse(pageable);
-                break;
-        }
-        return CommonResponse.create(msgList);
+        return userService.getCurrentUser().map(user -> {
+            List<OrderTotal> msgList = null;
+            switch (user.getRole()) {
+                case Admin:
+                case Service:
+                    msgList = orderTotalService.findAllOrder(page, size);
+                    break;
+                case Warehouse:
+                    msgList = orderTotalService.findOrderTotalsByStatus(OrderStatus.Payed, page, size);
+                    break;
+            }
+            return APIResponse.ok(msgList);
+        }).orElse(APIResponse.badRequest("无权访问！"));
     }
 
     @GetMapping("/order/pageSize")
-    public CommonResponse<Long> getOrderPageSize() {
-        Long size = 0L;
-        switch (userService.getCurrentUser().getRoleName()) {
-            case Admin:
-            case Service:
-                size = orderTotalService.getOrderCount();
-                break;
-            case Warehouse:
-                size = orderTotalService.getOrderCountByWarehouse();
-                break;
-        }
-        return CommonResponse.create(size);
+    public APIResponse<Long> getOrderPageSize() {
+        return userService.getCurrentUser().map(user -> {
+            Long size = 0L;
+            switch (user.getRole()) {
+                case Admin:
+                case Service:
+                    size = orderTotalService.getOrderCount();
+                    break;
+                case Warehouse:
+                    size = orderTotalService.countOrderTotalsByStatus(OrderStatus.Payed);
+                    break;
+            }
+            return APIResponse.ok(size);
+        }).orElse(APIResponse.badRequest("无权访问！"));
     }
 
     @GetMapping("/order/search")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE','WAREHOUSE')")
-    public CommonResponse<List<OrderResponse>> searchUserOrder(@RequestParam(required = false, defaultValue = "0", value="page") Integer page,
-                                                               @RequestParam("username") String username) {
+    public APIResponse<List<OrderTotal>> searchUserOrder(@RequestParam(required = false, defaultValue = "0", value="p") Integer page,
+                                                         @RequestParam(required = false, defaultValue = "10", value="s") Integer size,
+                                                         @RequestParam("username") String username) {
         //管理员客服搜索某用户订单详情，仓库管理员搜索某用户已支付订单
-        User user = userService.getCurrentUser();
-        User normalUser = userService.findUserByUsername(username);
-        List<OrderResponse> msgList = null;
-        Pageable pageable = PageRequest.of(page, PAGESIZE, Sort.by("createTime").descending());
-        switch (user.getRoleName()) {
-            case Admin:
-            case Service:
-                msgList = orderTotalService.searchUserOrder(pageable, normalUser);
-                break;
-            case Warehouse:
-                msgList = orderTotalService.searchUserOrderResponseByWarehouse(pageable, normalUser);
-                break;
-        }
-        return CommonResponse.create(msgList);
+        return userService.getCurrentUser().map(user -> {
+            User normalUser = userService.findUserByUsername(username);
+            List<OrderTotal> msgList = null;
+            switch (user.getRole()) {
+                case Admin:
+                case Service:
+                    msgList = orderTotalService.findUserOrder(normalUser.getId(), page, size);
+                    break;
+                case Warehouse:
+                    msgList = orderTotalService.findOrderTotalsByUserIdAndStatus(normalUser.getId(), OrderStatus.Payed, page, size);
+                    break;
+            }
+            return APIResponse.ok(msgList);
+        }).orElse(APIResponse.badRequest("无权访问！"));
     }
 
     @GetMapping("/order/{orderId}")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE','WAREHOUSE')")
-    public CommonResponse<OrderResponse> getOrder(@PathVariable Long orderId) {
-        User user = userService.getCurrentUser();
-        return orderTotalService.findOrderResponseById(orderId)
-                .map(orderResponse -> {
-                    if (UserRole.Warehouse == user.getRoleName()) {
-                        if (OrderStatus.Payed.equals(orderResponse.getStatus())
-                            || OrderStatus.Shipped.equals(orderResponse.getStatus())) {
-                            return CommonResponse.create(orderResponse);
-                        } else {
-                            throw new NotFoundResourceException();
+    public APIResponse<OrderTotal> getOrder(@PathVariable Long orderId) {
+        return userService.getCurrentUser().map(user ->
+                orderTotalService.findById(orderId)
+                    .map(orderTotal -> {
+                        if (UserRole.Warehouse == user.getRole()) {
+                            if (OrderStatus.Payed.equals(orderTotal.getStatus())
+                                    || OrderStatus.Shipped.equals(orderTotal.getStatus())) {
+                                return APIResponse.ok(orderTotal);
+                            } else {
+                                throw new NotFoundResourceException();
+                            }
                         }
-                    }
-                    return CommonResponse.create(orderResponse);
-                })
-                .orElseThrow(NotFoundResourceException::new);
+                        return APIResponse.ok(orderTotal);
+                    })
+                    .orElseThrow(NotFoundResourceException::new)
+        ).orElse(APIResponse.badRequest("无权访问！"));
     }
 
     @PutMapping("/order/{orderId}")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE','WAREHOUSE')")
-    public CommonResponse<Object> updateUserOrder(@PathVariable Long orderId,
-                                                  OrderStatus status,
-                                                  BigDecimal price,
-                                                  String payMethod,
-                                                  String express,
-                                                  String logistics,
-                                                  Boolean isDelete
-                                                         ) {
-        User user = userService.getCurrentUser();
-        logger.warn("User role: "+user.getRoleAuthority().toString());
+    public APIResponse<?> updateUserOrder(@PathVariable Long orderId,
+                                           OrderStatus status,
+                                           BigDecimal price,
+                                           String payMethod,
+                                           String express,
+                                           String logistics,
+                                           Boolean isDelete) {
+        Optional<User> currentUser = userService.getCurrentUser();
+        User user;
+        if (currentUser.isPresent())
+            user = currentUser.get();
+        else
+            return APIResponse.badRequest("无权访问！");
+
+        log.info("User {} , role: {}", user.getUsername(), user.getRole());
 
         return orderTotalService.findById(orderId)
                 .map(orderTotal -> {
                     String successMsg = null;
                     String failMsg = null;
-                    switch (user.getRoleName()) {
+                    switch (user.getRole()) {
                         case Admin:
                             orderTotal.setPrice(price);
                             orderTotal.setStatus(status);
                             orderTotal.setExpress(express);
                             orderTotal.setLogistics(logistics);
                             orderTotal.setPayMethod(payMethod);
-                            orderTotal.setDelete(isDelete);
+                            orderTotal.setIsDelete(isDelete);
                             break;
                         case Service:
                             orderTotal.setStatus(status);
                             orderTotal.setExpress(express);
                             orderTotal.setLogistics(logistics);
                             orderTotal.setPayMethod(payMethod);
-                            orderTotal.setDelete(isDelete);
+                            orderTotal.setIsDelete(isDelete);
                             break;
                         case Warehouse:
                             //仓库管理员发货已支付订单
@@ -278,7 +282,7 @@ public class AdminController {
                     if (failMsg != null) {
                         throw new BadRequestException(failMsg);
                     }
-                    return CommonResponse.create(successMsg);
+                    return APIResponse.ok(successMsg);
                 })
                 .orElseThrow(() -> new NotFoundResourceException("订单不存在！"));
 
@@ -286,10 +290,10 @@ public class AdminController {
 
     @PutMapping("/order/{orderDetailId}/comment")
     @PreAuthorize("hasRole('ADMIN')")
-    public CommonResponse<Object> updateUserComment(@PathVariable Long orderDetailId,
-                                                    Long userId,
-                                                    Integer rate,
-                                                    String comment) {
+    public APIResponse<?> updateUserComment(@PathVariable Long orderDetailId,
+                                             Long userId,
+                                             Integer rate,
+                                             String comment) {
         //管理员更改用户评论
         Optional<User> optionalUser = userService.findById(userId);
         if (!optionalUser.isPresent()) {
@@ -297,29 +301,26 @@ public class AdminController {
         }
         User user = optionalUser.get();
         return orderDetailService.findById(orderDetailId)
-                .map(orderDetail -> {
-                    Comment cmt = orderDetail.getCommentId();
-                    if (cmt != null) {
+            .map(orderDetail ->
+                commentService.findById(orderDetail.getOrderId())
+                    .map(cmt -> {
                         cmt.setProductId(orderDetail.getProductId());
-                        cmt.setUserId(user);
+                        cmt.setUserId(user.getId());
                         cmt.setRate(rate);
                         cmt.setComment(comment);
                         commentService.save(cmt);
 
-                        orderDetail.setCommentId(cmt);
+                        orderDetail.setCommentId(cmt.getId());
                         orderDetailService.save(orderDetail);
-                        return CommonResponse.create("更新评价成功！");
-                    } else {
-                        throw new BadRequestException("订单未完成，创建评价失败！");
-                    }
-                })
-                .orElseThrow(() -> new NotFoundResourceException("未找到该订单！"));
+                        return APIResponse.ok("更新评价成功！");
+                    }).orElseThrow(() -> new BadRequestException("订单未完成，创建评价失败！"))
+            ).orElseThrow(() -> new NotFoundResourceException("未找到该订单！"));
     }
 
     @PostMapping("/category")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> createCategory(String name,
-                                                 Long parentId) {
+    public APIResponse<?> createCategory(String name,
+                                         Long parentId) {
         categoryService.findCategoryByName(name)
                 .ifPresent(category -> { throw new BadRequestException("分类已存在！"); });
 
@@ -329,34 +330,34 @@ public class AdminController {
         category.setParentId(parentId);
         categoryService.save(category);
 
-        return CommonResponse.create("创建分类成功！");
+        return APIResponse.ok("创建分类成功！");
     }
 
     @PutMapping("/category/{categoryId}")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> updateCategory(@PathVariable Long categoryId,
-                                                 String name,
-                                                 Boolean status,
-                                                 Long parentId) {
+    public APIResponse<Object> updateCategory(@PathVariable Long categoryId,
+                                                  String name,
+                                                  Boolean status,
+                                                  Long parentId) {
         return categoryService.findById(categoryId).map(category -> {
             category.setName(name);
             category.setStatus(status);
             category.setParentId(parentId);
             categoryService.save(category);
-            return CommonResponse.create("更新分类成功！");
+            return APIResponse.ok("更新分类成功！");
         }).orElseThrow(() -> new NotFoundResourceException("分类不存在！"));
     }
 
     @PostMapping("/product")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> createProduct(Long categoryId,
-                                                String name,
-                                                String subtitle,
-                                                String image,
-                                                String detail,
-                                                BigDecimal price,
-                                                Integer stock,
-                                                Boolean status) {
+    public APIResponse<Object> createProduct(Long categoryId,
+                                                 String name,
+                                                 String subtitle,
+                                                 String image,
+                                                 String detail,
+                                                 BigDecimal price,
+                                                 Integer inventory,
+                                                 Boolean status) {
         if (productService.findProductByName(name).isPresent()) {
             throw new BadRequestException("商品已存在！");
         } else {
@@ -364,7 +365,7 @@ public class AdminController {
                 Product product = new Product();
                 return saveProduct(name, subtitle,
                                     image, detail,
-                                    price, stock,
+                                    price, inventory,
                                     status, product, category);
             }).orElseThrow(() -> new BadRequestException("新建商品失败！"));
         }
@@ -372,51 +373,51 @@ public class AdminController {
 
     @PutMapping("/product/{productId}")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> updateProduct(@PathVariable Long productId,
-                                                Long categoryId,
-                                                String name,
-                                                String subtitle,
-                                                String image,
-                                                String detail,
-                                                BigDecimal price,
-                                                Integer stock,
-                                                Boolean status) {
+    public APIResponse<Object> updateProduct(@PathVariable Long productId,
+                                                 Long categoryId,
+                                                 String name,
+                                                 String subtitle,
+                                                 String image,
+                                                 String detail,
+                                                 BigDecimal price,
+                                                 Integer inventory,
+                                                 Boolean status) {
         return productService.findById(productId).map(
                 product ->
                         categoryService.findById(categoryId).map(
                                 category ->
                                         saveProduct(name, subtitle,
                                                     image, detail,
-                                                    price, stock,
+                                                    price, inventory,
                                                     status, product, category))
                                 .orElseThrow(() -> new BadRequestException("分类不存在！"))
                 ).orElseThrow(() -> new BadRequestException("商品不存在！"));
     }
 
-    private CommonResponse<Object> saveProduct(String name,
-                                               String subtitle,
-                                               String image,
-                                               String detail,
-                                               BigDecimal price,
-                                               Integer stock,
-                                               Boolean status,
-                                               Product product,
-                                               Category category) {
-        product.setCategoryId(category);
+    private APIResponse<Object> saveProduct(String name,
+                                                String subtitle,
+                                                String image,
+                                                String detail,
+                                                BigDecimal price,
+                                                Integer inventory,
+                                                Boolean status,
+                                                Product product,
+                                                Category category) {
+        product.setCategoryId(category.getId());
         product.setName(name);
         product.setSubtitle(subtitle);
-        product.setImage(image);
+        product.getImage().getNames().add(image);
         product.setDetail(detail);
         product.setPrice(price);
-        product.setStock(stock);
+        product.setInventory(inventory);
         product.setStatus(status);
         productService.save(product);
-        return CommonResponse.create("保存商品成功！");
+        return APIResponse.ok("保存商品成功！");
     }
 
     @PostMapping("/product/uploadImage")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> uploadImages(@RequestParam("file") MultipartFile file) {
+    public APIResponse<Object> uploadImages(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty() || file.getSize() == 0) {
             throw new BadRequestException("文件为空！");
         }
@@ -425,26 +426,25 @@ public class AdminController {
         if (StringUtils.isEmpty(fileName)) {
             throw new BadRequestException("上传失败，请检查文件！");
         }
-        String fileDownloadUri = "product/image/" + fileName;
-        return CommonResponse.create(fileDownloadUri);
+        return APIResponse.ok(fileName);
     }
 
     @GetMapping("/statistic")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<List<Statistic>> getStatistic(@RequestParam(required = false, defaultValue = "0", value="page") Integer page) {
-        Pageable pageable = PageRequest.of(page, 7, Sort.by("timestamp").descending());
-        return CommonResponse.create(statisticService.findAll(pageable));
+    public APIResponse<List<Statistic>> getStatistic(@RequestParam(required = false, defaultValue = "0", value="p") Integer page,
+                                                     @RequestParam(required = false, defaultValue = "0", value="s") Integer size) {
+        return APIResponse.ok(statisticService.findAll(page, size));
     }
 
     @PutMapping("/banner")
     @PreAuthorize("hasAnyRole('ADMIN','SERVICE')")
-    public CommonResponse<Object> updateAdvert(String image) {
+    public APIResponse<?> updateAdvert(String image) {
         Advert advert = advertService.getAdvert();
         if (image != null) {
-            advert.setImage(image);
+            advert.getImage().getNames().add(image);
             advertService.save(advert);
         }
-        return CommonResponse.create("保存首页Banner成功！");
+        return APIResponse.ok("保存首页Banner成功！");
     }
 
 }

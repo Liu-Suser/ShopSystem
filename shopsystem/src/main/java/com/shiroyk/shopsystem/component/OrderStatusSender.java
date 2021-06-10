@@ -8,13 +8,16 @@ package com.shiroyk.shopsystem.component;
 import com.shiroyk.shopsystem.constant.RabbitConstants;
 import com.shiroyk.shopsystem.entity.OrderTotal;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrderStatusSender {
-    @Autowired
-    private AmqpTemplate amqpTemplate;
+
+    private final AmqpTemplate amqpTemplate;
+
+    public OrderStatusSender(AmqpTemplate amqpTemplate) {
+        this.amqpTemplate = amqpTemplate;
+    }
 
     public void sendMessage(OrderTotal orderId, final long delayTimes){
         amqpTemplate.convertAndSend(RabbitConstants.ORDER_EXCHANGE, RabbitConstants.ORDER_STATUS_KEY, orderId, message -> {

@@ -6,38 +6,21 @@
 package com.shiroyk.shopsystem.service;
 
 import com.shiroyk.shopsystem.entity.Address;
-import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.repository.AddressRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class AddressService {
-    private final AddressRepository addressRepository;
+public interface AddressService {
 
-    public AddressService(AddressRepository addressRepository) {
-        this.addressRepository = addressRepository;
-    }
+    void save(Address address);
 
-    public void save(Address address) {
-        addressRepository.save(address);
-    }
+    Optional<Address> findById(Long id);
 
-    public List<Address> findAllByUserId(User user) {
-        return addressRepository.findAllByUserId(user);
-    }
+    Address get(Long id);
 
-    public List<Address> findAllByUserIdAndNotDelete(User user) {
-        return addressRepository.findAllByUserIdAndIsDelete(user, false);
-    }
+    List<Address> findAllByUserId(long uid);
 
-    public Optional<Address> findById(Long id) {
-        return addressRepository.findById(id);
-    }
+    List<Address> findAllByUserIdAndNotDelete(long uid);
 
-    public Optional<Address> findAddressByUserDefault(User user) {
-        return addressRepository.findAddressByUserIdAndIsDefaultTrue(user);
-    }
+    Optional<Address> findAddressByUserIdAndIsDefault(long uid);
 }

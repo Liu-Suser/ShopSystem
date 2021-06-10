@@ -6,119 +6,28 @@
 package com.shiroyk.shopsystem.entity;
 
 import com.shiroyk.shopsystem.constant.UserRole;
+import com.shiroyk.shopsystem.dto.response.UserDto;
+import lombok.Data;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "user")
+@Data
 public class User implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String username;
-
     private String password;
-
     private String nickname;
-
     private Integer userpoint = 0;
-
     private String phone;
-
     private String question = "";
-
     private String answer = "";
-
     private UserRole role = UserRole.Normal;
-
-    @Column(name = "create_time")
     private LocalDateTime createTime = LocalDateTime.now();
-
-    @Column(name = "update_time")
     private LocalDateTime updateTime = LocalDateTime.now();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Integer getUserpoint() {
-        return userpoint;
-    }
-
-    public void inUserpoint(Integer userpoint) {
-        this.userpoint += userpoint;
-    }
-
-    public void setUserpoint(Integer userpoint) {
-        this.userpoint = userpoint;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public UserRole getRoleName() {
-        return role;
-    }
-
-    public Integer getRole() {
-        return role.getRole();
-    }
 
     public List<SimpleGrantedAuthority> getRoleAuthority() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -140,24 +49,15 @@ public class User implements Serializable {
         return authorities;
     }
 
-    public void setRole(UserRole role) {
-        this.role = role;
+    public void inUserpoint(int i) {
+        userpoint += i / 100;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    public UserDto toUserDtoS() {
+        return new UserDto(id, username, nickname, userpoint);
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    public UserDto toUserDtoM() {
+        return new UserDto(id, username, nickname, userpoint, phone);
     }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
-
 }

@@ -1,6 +1,7 @@
 package com.shiroyk.shopsystem.repository;
 
 import com.shiroyk.shopsystem.entity.User;
+import com.shiroyk.shopsystem.mapper.UserMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,14 @@ public class UserRepositoryTests {
     private TestEntityManager entityManager;
 
     @Autowired
-    private UserRepository repository;
+    private UserMapper userMapper;
 
     @Test
     public void testCreateUser() {
         User user = new User();
         user.setUsername("test99");
         this.entityManager.persist(user);
-        User newUser = this.repository.findUserByUsername("test99");
+        User newUser = this.userMapper.findUserByUsername("test99");
         assertThat(newUser.getId()).isNotNull();
     }
 }

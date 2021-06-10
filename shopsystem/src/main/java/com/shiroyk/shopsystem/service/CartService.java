@@ -6,34 +6,17 @@
 package com.shiroyk.shopsystem.service;
 
 import com.shiroyk.shopsystem.entity.Cart;
-import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.repository.CartRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class CartService {
-    private final CartRepository cartRepository;
+public interface CartService {
 
-    public CartService(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
-    }
+    void save(Cart cart);
 
-    public void save(Cart cart) {
-        cartRepository.save(cart);
-    }
+    void delete(long id);
 
-    public void delete(Long id) {
-        cartRepository.deleteById(id);
-    }
+    Optional<Cart> findById(long id);
 
-    public Optional<Cart> findById(Long id) {
-        return cartRepository.findById(id);
-    }
-
-    public List<Cart> findCartByUserId(User user) {
-        return cartRepository.findCartsByUserId(user);
-    }
+    List<Cart> findCartByUserId(long uid);
 }

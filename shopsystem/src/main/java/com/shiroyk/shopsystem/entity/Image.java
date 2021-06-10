@@ -1,18 +1,22 @@
 package com.shiroyk.shopsystem.entity;
 
+import lombok.Data;
+
+import java.util.Collections;
+import java.util.Set;
+
+@Data
 public class Image {
-    private String url;
+    private Set<String> names;
 
-    public String getUrl() {
-        return url;
+    public Image() {
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public Image(Set<String> names) {
+        this.names = names;
     }
 
-    @Override
-    public String toString() {
-        return "{" + "\"url:\"" + url + "}";
+    public static Image empty() {
+        return new Image(Collections.emptySet());
     }
 }

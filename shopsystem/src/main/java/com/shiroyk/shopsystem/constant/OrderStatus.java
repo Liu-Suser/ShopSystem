@@ -5,7 +5,7 @@
 
 package com.shiroyk.shopsystem.constant;
 
-public enum OrderStatus {
+public enum OrderStatus implements BaseEnum {
     Ordered(0b000),
     Cancel(0b001),
     Payed(0b010),
@@ -21,8 +21,8 @@ public enum OrderStatus {
         this.status = status;
     }
 
-    public int getStatus() {
-        return this.status;
+    @Override
+    public int getValue() {
+        return status;
     }
-
 }

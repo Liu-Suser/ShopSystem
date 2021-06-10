@@ -5,7 +5,9 @@
 
 package com.shiroyk.shopsystem.constant;
 
-public enum UserRole {
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+public enum UserRole implements BaseEnum {
     Admin(0b00),
     Service(0b01),
     Warehouse(0b10),
@@ -17,7 +19,8 @@ public enum UserRole {
         this.role = role;
     }
 
-    public int getRole() {
+    @Override
+    public int getValue() {
         return role;
     }
 }

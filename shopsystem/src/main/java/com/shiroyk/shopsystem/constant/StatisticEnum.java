@@ -5,7 +5,7 @@
 
 package com.shiroyk.shopsystem.constant;
 
-public enum  StatisticEnum {
+public enum  StatisticEnum implements BaseEnum {
     newOrder(0),
     CancelOrder(1),
     CompleteOrder(2);
@@ -16,7 +16,8 @@ public enum  StatisticEnum {
         this.statistic = i;
     }
 
-    public int getStatistic() {
+    @Override
+    public int getValue() {
         return statistic;
     }
 }

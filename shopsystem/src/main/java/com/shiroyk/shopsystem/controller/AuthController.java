@@ -5,10 +5,10 @@
 
 package com.shiroyk.shopsystem.controller;
 
+import com.shiroyk.shopsystem.dto.response.TokenDto;
 import com.shiroyk.shopsystem.entity.JwtUser;
 import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.dto.response.LoginResponse;
-import com.shiroyk.shopsystem.dto.response.CommonResponse;
+import com.shiroyk.shopsystem.dto.response.APIResponse;
 import com.shiroyk.shopsystem.exception.BadRequestException;
 import com.shiroyk.shopsystem.exception.NotFoundResourceException;
 import com.shiroyk.shopsystem.service.UserService;
@@ -33,10 +33,15 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
     }
-
+    
+    /** 
+    * @Description: 用户登录
+    * @Param: [username, password] 
+    * @return: 成功或失败消息
+    */ 
     @PostMapping("/login")
-    public CommonResponse<Object> login(String username,
-                                        String password) {
+    public APIResponse<Object> login(String username,
+                                     String password) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 username, password));
 
@@ -44,14 +49,19 @@ public class AuthController {
         String token = JwtTokenUtils.createToken(authentication.getName());
         JwtUser user = (JwtUser) authentication.getPrincipal();
 
-        return CommonResponse.create("Success", new LoginResponse(user, token));
+        return APIResponse.ok(new TokenDto(user.getUsername(), token));
     }
-
+    
+    /** 
+    * @Description: 用户注册
+    * @Param: [username, password, nickname, phone] 
+    * @return: 成功或失败消息
+    */ 
     @PostMapping("/signup")
-    public CommonResponse<Object> signUp(String username,
-                                         String password,
-                                         String nickname,
-                                         String phone) {
+    public APIResponse<Object> signUp(String username,
+                                          String password,
+                                          String nickname,
+                                          String phone) {
         if (userService.findUserByUsername(username) != null) {
             throw new NotFoundResourceException( "用户已存在！");
         } else {
@@ -62,30 +72,40 @@ public class AuthController {
             user.setPhone(phone);
             user.setNickname(nickname);
             userService.save(user);
-            return CommonResponse.create("注册成功！");
+            return APIResponse.ok("注册成功！");
         }
     }
 
+    /**
+    * @Description: 获取用户的安全问题
+    * @Param: [username]
+    * @return: 安全问题
+    */
     @GetMapping("/question")
-    public CommonResponse<String> getForgetQuestion(@RequestParam("username") String username) {
+    public APIResponse<?> getForgetQuestion(@RequestParam("username") String username) {
         //获取用户的安全问题
         Optional<String> question = userService.getAnswerByUsername(username);
         return question
-                .map(s -> CommonResponse.create("Success", s))
+                .map(APIResponse::ok)
                 .orElseThrow(() -> new NotFoundResourceException("用户不存在！"));
     }
-
+    
+    /** 
+    * @Description: 重置密码
+    * @Param: [username, answer, newPassword] 
+    * @return: 成功或失败消息
+    */ 
     @PutMapping("/forget")
-    public CommonResponse<Object> forgetPassword(String username,
-                                                 String answer,
-                                                 String newPassword) {
+    public APIResponse<Object> forgetPassword(String username,
+                                                  String answer,
+                                                  String newPassword) {
         //对比安全问题答案，相同则修改密码
         User user = userService.findUserByUsername(username);
         if (user.getAnswer().equals(answer)) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             user.setPassword(encoder.encode(newPassword));
             userService.save(user);
-            return CommonResponse.create("修改密码成功！");
+            return APIResponse.ok("修改密码成功！");
         } else {
             throw new BadRequestException("修改密码失败！");
         }

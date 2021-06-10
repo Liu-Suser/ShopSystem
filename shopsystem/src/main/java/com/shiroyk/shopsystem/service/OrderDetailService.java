@@ -6,34 +6,20 @@
 package com.shiroyk.shopsystem.service;
 
 import com.shiroyk.shopsystem.entity.OrderDetail;
-import com.shiroyk.shopsystem.repository.OrderDetailRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class OrderDetailService {
-    private final OrderDetailRepository orderDetailRepository;
+public interface OrderDetailService {
 
-    public OrderDetailService(OrderDetailRepository orderDetailRepository) {
-        this.orderDetailRepository = orderDetailRepository;
-    }
+    void save(OrderDetail orderDetail);
 
-    public void save(OrderDetail orderDetail) {
-        orderDetailRepository.save(orderDetail);
-    }
+    void insertAll(List<OrderDetail> orderDetail);
 
-    public void save(List<OrderDetail> orderDetail) {
-        orderDetailRepository.saveAll(orderDetail);
-    }
+    Optional<OrderDetail> findById(Long id);
 
-    public Optional<OrderDetail> findById(Long id) {
-        return orderDetailRepository.findById(id);
-    }
+    List<OrderDetail> findOrderDetailByOrderId(Long id);
 
-    public List<OrderDetail> findOrderDetailByOrderId(Long id) {
-        return orderDetailRepository.findOrderDetailByOrderIdId(id);
-    }
+    List<OrderDetail> findOrderDetailAndProductByOrderId(Long id);
 
 }

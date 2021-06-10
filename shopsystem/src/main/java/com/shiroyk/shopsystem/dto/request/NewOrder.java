@@ -5,27 +5,19 @@
 
 package com.shiroyk.shopsystem.dto.request;
 
+import lombok.Data;
+
 import java.util.List;
-import java.util.Map;
 
+@Data
 public class NewOrder {
-
     Long aid;
-    List<Map<String, Long>> details;
+    List<Detail> details;
 
-    public Long getAid() {
-        return aid;
+    @Data
+    public static class Detail {
+        Long pid;
+        Long quantity;
     }
 
-    public void setAid(Long aid) {
-        this.aid = aid;
-    }
-
-    public List<Map<String, Long>> getDetails() {
-        return details;
-    }
-
-    public void setDetails(List<Map<String, Long>> details) {
-        this.details = details;
-    }
 }

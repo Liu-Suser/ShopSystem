@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shiroyk.shopsystem.mapper.OrderTotalMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.shiroyk.shopsystem.entity.OrderTotal">
+        insert into order_total (id, user_id, address_id, status, is_delete, price, pay_method,
+                                 payment_time, express, logistics, create_time, update_time)
+        values (#{id}, #{userId}, #{addressId},
+                #{status}, #{isDelete}, #{price},
+                #{payMethod}, #{paymentTime}, #{express},
+                #{logistics}, #{createTime}, #{updateTime})
+        on duplicate key update user_id = #{userId}, address_id =  #{addressId}, status = #{status},
+                                is_delete = #{isDelete}, price = #{price}, pay_method = #{payMethod},
+                                payment_time = #{paymentTime}, express = #{express}, logistics = #{logistics},
+                                create_time = #{createTime}, update_time = #{updateTime}
+    </insert>
+    <select id="findById" resultType="com.shiroyk.shopsystem.entity.OrderTotal" parameterType="long">
+        select * from order_total where id = #{id}
+    </select>
+    <select id="findAll" resultType="com.shiroyk.shopsystem.entity.OrderTotal">
+        select * from order_total
+    </select>
+    <select id="count" resultType="java.lang.Long">
+        select count(id) from order_total
+    </select>
+    <select id="countOrderTotalsByUserIdAndIsDeleteFalse" resultType="java.lang.Long" parameterType="long">
+        select count(id) from order_total where user_id = #{uid} and is_delete is false
+    </select>
+    <select id="countOrderTotalsByStatus" resultType="java.lang.Long" parameterType="com.shiroyk.shopsystem.constant.OrderStatus">
+        select count(id) from order_total where status = #{status}
+    </select>
+    <select id="findOrderTotalsByStatus" resultType="com.shiroyk.shopsystem.entity.OrderTotal">
+        select * from order_total where status = #{status}
+    </select>
+    <select id="findOrderTotalsByUserId" resultType="com.shiroyk.shopsystem.entity.OrderTotal">
+        select * from order_total where user_id = #{uid}
+    </select>
+    <select id="findOrderTotalsByUserIdAndIsDeleteFalse" resultType="com.shiroyk.shopsystem.entity.OrderTotal">
+        select id, status, price, payment_time, create_time, update_time
+        from order_total
+        where user_id = #{uid} and is_delete is false
+    </select>
+    <select id="findOrderTotalsByUserIdAndStatus" resultType="com.shiroyk.shopsystem.entity.OrderTotal">
+        select * from order_total where user_id = #{uid} and status = #{status}
+    </select>
+
+    <resultMap type="com.shiroyk.shopsystem.entity.OrderTotal" id="getOrderInfo">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="address_id" property="addressId"/>
+        <result column="status" property="status"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="price" property="price"/>
+        <result column="pay_method" property="payMethod"/>
+        <result column="payment_time" property="paymentTime"/>
+        <result column="express" property="express"/>
+        <result column="logistics" property="logistics"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <association property="user" javaType="com.shiroyk.shopsystem.entity.User">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+            <result column="nickname" property="nickname"/>
+            <result column="userpoint" property="userpoint"/>
+        </association>
+        <association property="address" javaType="com.shiroyk.shopsystem.entity.Address">
+            <id column="id" property="id"/>
+            <result column="name" property="name"/>
+            <result column="phone" property="phone"/>
+            <result column="address" property="address"/>
+        </association>
+    </resultMap>
+    <select id="findInfoById" resultMap="getOrderInfo">
+        select * from order_total o, user u, address a
+        where o.id = #{id} and u.id = o.user_id and a.id = o.address_id
+    </select>
+
+</mapper>

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7867f9d4-9115-474d-a5a4-70e0b2d74a40",
+		"_postman_id": "77666775-88e8-40d9-a1ac-a2f6d1275431",
 		"name": "ShopSystem",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,12 +9,11 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "/user/info",
+					"name": "/user",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "6c193293-b4c4-486f-8c5a-bf42929a50ab",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -40,21 +39,20 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/user/info",
+							"raw": "http://{{baseurl}}/user",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
 							],
 							"path": [
-								"user",
-								"info"
+								"user"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/info",
+					"name": "/user",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -69,49 +67,29 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "nickname",
-									"value": "测试",
-									"type": "text"
-								},
-								{
-									"key": "phone",
-									"value": "110",
-									"type": "text"
-								},
-								{
-									"key": "question",
-									"value": "test",
-									"type": "text"
-								},
-								{
-									"key": "answer",
-									"value": "test",
-									"type": "text"
-								}
-							],
+							"mode": "raw",
+							"raw": "{\r\n    \"nickname\": \"测试\",\r\n    \"phone\": 110,\r\n    \"question\": \"test\",\r\n    \"answer\": \"test\"\r\n}",
 							"options": {
-								"urlencoded": {}
+								"raw": {
+									"language": "json"
+								}
 							}
 						},
 						"url": {
-							"raw": "http://{{baseurl}}/user/info",
+							"raw": "http://{{baseurl}}/user",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
 							],
 							"path": [
-								"user",
-								"info"
+								"user"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/order/pageSize",
+					"name": "/user/order/count",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -126,7 +104,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/user/order/pageSize",
+							"raw": "http://{{baseurl}}/user/order/count",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -134,19 +112,18 @@
 							"path": [
 								"user",
 								"order",
-								"pageSize"
+								"count"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/order?page=0",
+					"name": "/user/order",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "066791f0-7cb1-4d40-ae1a-990c915a0bf0",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -172,7 +149,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/user/order?page=0",
+							"raw": "http://{{baseurl}}/user/order?p=4&s=10",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -183,8 +160,12 @@
 							],
 							"query": [
 								{
-									"key": "page",
-									"value": "0"
+									"key": "p",
+									"value": "4"
+								},
+								{
+									"key": "s",
+									"value": "10"
 								}
 							]
 						}
@@ -197,7 +178,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "e5ee0c0b-1493-4d78-a10b-9c674836b845",
 								"exec": [
 									"let body = {",
 									"    \"aid\": 1,",
@@ -230,7 +210,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{{body}}",
+							"raw": "{\r\n    \"aid\": 1,\r\n    \"details\": [\r\n        {\r\n            \"pid\": 1,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -252,12 +232,11 @@
 					"response": []
 				},
 				{
-					"name": "/user/order/1",
+					"name": "/user/order/{id}",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "0b4c6ff5-55c5-4daa-9a6e-317a9c1a18cb",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -283,7 +262,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/user/order/16",
+							"raw": "http://{{baseurl}}/user/order/53",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -291,14 +270,14 @@
 							"path": [
 								"user",
 								"order",
-								"16"
+								"53"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/order/1",
+					"name": "/user/order/{id}",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -317,13 +296,13 @@
 							"urlencoded": [
 								{
 									"key": "status",
-									"value": "Cancel",
+									"value": "Completed",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://{{baseurl}}/user/order/16",
+							"raw": "http://{{baseurl}}/user/order/59",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -331,14 +310,14 @@
 							"path": [
 								"user",
 								"order",
-								"16"
+								"59"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/order/1",
+					"name": "/user/order/{id}",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -353,7 +332,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/user/order/16",
+							"raw": "http://{{baseurl}}/user/order/58",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -361,14 +340,14 @@
 							"path": [
 								"user",
 								"order",
-								"16"
+								"58"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/user/order/2/comment",
+					"name": "/user/order/{orderId}/{orderDetailId}/comment",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -398,7 +377,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://{{baseurl}}/user/order/28/comment",
+							"raw": "http://{{baseurl}}/user/order/58/123/comment",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -406,7 +385,8 @@
 							"path": [
 								"user",
 								"order",
-								"28",
+								"58",
+								"123",
 								"comment"
 							]
 						}
@@ -419,7 +399,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "40eeac54-f478-45d1-9e34-7d961ef3ddeb",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -464,7 +443,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b5437f34-9b94-47db-87ad-0f366035bca8",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -541,10 +519,7 @@
 									"value": "false",
 									"type": "text"
 								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/user/address/2",
@@ -594,10 +569,7 @@
 									"value": "test address",
 									"type": "text"
 								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/user/address",
@@ -619,7 +591,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8b128bf2-f937-46e8-a7bb-b5f153a9217f",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -688,9 +659,206 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "/user/cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/cart",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "productId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "checked",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/cart",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"cart"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/cart/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "quantity",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "checked",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/cart/13",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"cart",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/cart/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "quantity",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "checked",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://{{baseurl}}/user/cart/13",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"cart",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/user/cart/{id}",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://{{baseurl}}/user/cart/13",
+							"protocol": "http",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"user",
+								"cart",
+								"13"
+							]
+						}
+					},
+					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Normal",
@@ -733,7 +901,7 @@
 					"response": []
 				},
 				{
-					"name": "/category/2/product",
+					"name": "/category/{id}/product",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -753,31 +921,31 @@
 					"response": []
 				},
 				{
-					"name": "/product/pageSize",
+					"name": "/product/count",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/product/pageSize",
+							"raw": "http://{{baseurl}}/product/count",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
 							],
 							"path": [
 								"product",
-								"pageSize"
+								"count"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/product?page=1",
+					"name": "/product",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/product?page=1",
+							"raw": "http://{{baseurl}}/product?p=1",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -787,7 +955,7 @@
 							],
 							"query": [
 								{
-									"key": "page",
+									"key": "p",
 									"value": "1"
 								}
 							]
@@ -796,7 +964,7 @@
 					"response": []
 				},
 				{
-					"name": "/product/1",
+					"name": "/product/{id}",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -815,7 +983,7 @@
 					"response": []
 				},
 				{
-					"name": "/product/1/comment",
+					"name": "/product/{id}/comment",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -835,12 +1003,12 @@
 					"response": []
 				},
 				{
-					"name": "/product/image/1.jpg",
+					"name": "/product/image/{img}",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/product/image/1.jpg",
+							"raw": "http://{{baseurl}}/product/image/d1a7b8e1b7035cca71b27db11fa6de0d",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -848,19 +1016,19 @@
 							"path": [
 								"product",
 								"image",
-								"1.jpg"
+								"d1a7b8e1b7035cca71b27db11fa6de0d"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/product/search?product=电脑",
+					"name": "/product/search",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://{{baseurl}}/product/search?product=电脑",
+							"raw": "http://{{baseurl}}/product/search?name=电脑",
 							"protocol": "http",
 							"host": [
 								"{{baseurl}}"
@@ -871,7 +1039,7 @@
 							],
 							"query": [
 								{
-									"key": "product",
+									"key": "name",
 									"value": "电脑"
 								}
 							]
@@ -898,8 +1066,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Admin",
@@ -957,10 +1124,7 @@
 									"value": "99",
 									"type": "text"
 								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/admin/product",
@@ -1029,10 +1193,7 @@
 									"value": "99",
 									"type": "text"
 								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/admin/product/2",
@@ -1072,10 +1233,7 @@
 									"type": "file",
 									"src": "/Users/shiroyk/Documents/Work/ShopSystem/ShopSystemBackend/image/1.jpg"
 								}
-							],
-							"options": {
-								"formdata": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/admin/product/uploadImage",
@@ -1192,7 +1350,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ecf7e396-c572-4a83-bdf5-508478721c5a",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -1308,7 +1465,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a0de8c76-f177-4c45-bef4-1ea7de4a7eae",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -1359,7 +1515,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "03a85a1e-dfaa-416e-a641-8768c73c7e74",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -1415,7 +1570,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9c0cc6bc-8513-46a3-b6a3-1d06f0f76c4a",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -1512,7 +1666,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e399e825-eff0-4c3f-b04f-c9dce7e76de2",
 								"exec": [
 									"pm.test(\"response must be valid and have a body\", function () {",
 									"     pm.response.to.be.ok;",
@@ -1777,8 +1930,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Auth",
@@ -1789,7 +1941,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f3b40942-5e38-49dc-b959-56addae3e84c",
 								"exec": [
 									""
 								],
@@ -1799,7 +1950,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "13e59ad4-12cb-4ece-b8a7-697a6f8cd007",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"pm.globals.set(\"token\", jsonData.token);"
@@ -1948,10 +2098,7 @@
 									"value": "test",
 									"type": "text"
 								}
-							],
-							"options": {
-								"urlencoded": {}
-							}
+							]
 						},
 						"url": {
 							"raw": "http://{{baseurl}}/auth/forget",
@@ -1967,9 +2114,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

@@ -3,7 +3,7 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/shiroyk/ShopSystem)
 
 ## 项目介绍
-ShopSystem是一个简单的网络商城系统，前端基于Vue.Js + Element UI，后端基于SpringBoot。前台模块包括商品展示、商品搜索、订单模块、购物车、注册登录等，后台模块包括分类管理、商品管理、订单管理、用户管理等。采用`docker compose`容器编排部署。
+ShopSystem是一个简单的网络商城系统，前端基于Vue.Js + Element UI，后端基于SpringBoot + Mybatis。前台模块包括商品展示、商品搜索、订单模块、购物车、注册登录等，后台模块包括分类管理、商品管理、订单管理、用户管理等。采用`docker compose`容器编排部署。
 
 ### 前端演示图片
 ![前端演示图片](demo/1.png)
@@ -12,7 +12,7 @@ ShopSystem是一个简单的网络商城系统，前端基于Vue.Js + Element UI
 ![前端演示图片](demo/4.png)
 
 ### Docker部署
-安装`npm`、`maven`、`docker`、`docker compose`
+安装`docker`与`docker compose`
 - 克隆仓库
 ```
 git clone https://github.com/shiroyk/ShopSystem.git
@@ -24,8 +24,7 @@ cd frontend && npm install && npm run build && cd ..
 - 编译后端<br>
 ```
 cd shopsystem
-mvn package
-cd -
+mvn war
 docker-compose build backend
 ```
 - 启动

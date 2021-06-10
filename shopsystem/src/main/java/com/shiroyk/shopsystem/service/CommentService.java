@@ -6,30 +6,18 @@
 package com.shiroyk.shopsystem.service;
 
 import com.shiroyk.shopsystem.entity.Comment;
-import com.shiroyk.shopsystem.repository.CommentRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class CommentService {
-    private final CommentRepository commentRepository;
+public interface CommentService {
 
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
+    void save(Comment comment);
 
-    public void save(Comment comment) {
-        commentRepository.save(comment);
-    }
+    Optional<Comment> findById(Long id);
 
-    public Optional<Comment> findById(Long id) {
-        return commentRepository.findById(id);
-    }
+    Optional<Comment> findByOrderId(Long id);
 
-    public List<Comment> findCommentByProductId(Long id) {
-        return commentRepository.findCommentsByProductIdId(id);
-    }
+    List<Comment> findCommentByProductId(Long id);
     
 }

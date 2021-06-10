@@ -5,74 +5,33 @@
 
 package com.shiroyk.shopsystem.service;
 
-import com.shiroyk.shopsystem.entity.JwtUser;
 import com.shiroyk.shopsystem.entity.User;
-import com.shiroyk.shopsystem.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public class UserService implements UserDetailsService {
+public interface UserService extends UserDetailsService {
 
-    private final UserRepository userRepository;
+    void save(User user);
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    void delete(long uid);
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findUserByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("用户不存在！");
-        }
-        return new JwtUser(user);
-    }
+    Optional<String> getAnswerByUsername(String username);
 
-    public void save(User user) {
-        userRepository.save(user);
-    }
+    User findUserByUsername(String username);
 
-    public void delete(User user) {
-        userRepository.delete(user);
-    }
+    List<User> searchUserByUsername(String username);
 
-    public Optional<String> getAnswerByUsername(String username) {
-        return userRepository.getAnswerByUsername(username);
-    }
+    Optional<User> findById(Long id);
 
-    public User findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
-    }
+    User get(Long id);
 
-    public List<User> searchUserByUsername(String username) {
-        return userRepository.findUsersByUsernameContains(username);
-    }
+    Optional<User> getCurrentUser();
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
-    }
+    String getCurrentUserName();
 
-    public User getCurrentUser() {
-        return findUserByUsername(getCurrentUserName());
-    }
+    List<User> findAll();
 
-    private String getCurrentUserName() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() != null) {
-            return (String) authentication.getPrincipal();
-        }
-        return null;
-    }
-
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
+    List<User> findUserByIdList(List<Long> idList);
 }
